@@ -577,7 +577,7 @@ footer{background:#060100;border-top:1px solid rgba(255,107,0,.14);text-align:ce
         <p class="s-label">Conoce a la Convenor</p>
         <h2>Doris Mabel<span class="l2">Mora Montero</span></h2>
         <div class="s-rule" style="margin:0 0 1.5rem"></div>
-        <p class="bio-q">"Desde los Modelos de Naciones Unidas hasta el escenario nacional del debate — cada ronda, cada argumento, cada moción ha sido un paso hacia aquí."</p>
+        <p class="bio-q">"Hoy, llevo conmigo una lección invaluable: inquebrantable es una identidad, es ser comunidad y agregar valor a ese sentimiento que nos une; así como las monarcas, nuestra visión se transforma y evoluciona."</p>
         <p class="bio-t" id="bio-t1">Egresada de UNAPEC, originaria de la regional 02 (San Juan y Elías Piña). Desde 2018, Doris incursionó en los Modelos de Naciones Unidas desarrollando habilidades en argumentación, debate, oratoria y diplomacia — semilla de una trayectoria que la llevaría a convertirse en una de las figuras más sólidas del debate competitivo dominicano.</p>
         <p class="bio-t" id="bio-t2">Ha ejercido como persona jueza en categoría Open y de Discursos en torneos nacionales e internacionales: TINDEP 2025 (Guatemala), TEN 2025, CIDELA 2026, Copa Demian (ed. Beatrice 2026), Torneo Andino de Discursos 2025, entre otros. Fue Coordinadora de Transportación en el CMUDE 2025 (sede RD) y Encargada Logística de la 1ra Copa Argumentativa PUCMM 2025.</p>
         <div class="bio-tags">
@@ -630,10 +630,10 @@ footer{background:#060100;border-top:1px solid rgba(255,107,0,.14);text-align:ce
 
       <div class="mocion-card">
         <div class="mocion-top">
-          <span class="mocion-badge">Moción Central · V CND</span>
+          <span class="mocion-badge">Nuestra Identidad · V CND</span>
         </div>
         <div class="mocion-q">
-          <div class="mq-line1">¿Qué significa</div>
+          <div class="mq-line1"></div>
           <div class="mq-blank-row">
             <span class="mocion-blank" id="mocion-blank">ser</span>
           </div>
@@ -846,6 +846,13 @@ footer{background:#060100;border-top:1px solid rgba(255,107,0,.14);text-align:ce
 
     <!-- TEXTOS TAB -->
     <div class="a-panel" id="tab-textos">
+      <div style="background:linear-gradient(90deg,rgba(255,107,0,.12),rgba(255,107,0,.06));border:1px solid rgba(255,107,0,.25);border-radius:14px;padding:1rem 1.4rem;margin-bottom:1.2rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.8rem">
+        <div>
+          <div style="font-size:.65rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--orange);margin-bottom:.2rem">Edición Global</div>
+          <div style="font-size:.82rem;color:rgba(255,255,255,.55)">Edita cualquier campo y presiona <strong style="color:#fff">Guardar Todo</strong> — se actualiza para todos al instante.</div>
+        </div>
+        <button class="submit-btn" onclick="saveTextos()" style="white-space:nowrap;min-width:130px">💾 Guardar Todo</button>
+      </div>
       <div class="a-card">
         <div class="a-title">Misión &amp; Visión</div>
         <div class="fg">
@@ -1515,14 +1522,7 @@ function applySettingsToForms(d){
   setVal('mocion-sub-inp',     d.mocionSub);
   setVal('pdf-prop-name',      d.pdfPropName);
   setVal('pdf-wsdc-name',      d.pdfWsdcName);
-  ['prop','wsdc'].forEach(key=>{
-    const name  = d['pdf'+cap(key)+'Name'];
-    const curr  = document.getElementById('pdf-'+key+'-current');
-    const cname = document.getElementById('pdf-'+key+'-curr-name');
-    const delbtn= document.getElementById('del-'+key+'-pdf');
-    if(d['pdf'+cap(key)+'HasRTDB']){ if(curr) curr.style.display=''; if(cname) cname.textContent=name||''; const szEl=document.getElementById('pdf-'+key+'-curr-size'); if(szEl&&d['pdf'+cap(key)+'Size']) szEl.textContent=Math.round(d['pdf'+cap(key)+'Size']/1024)+'KB'; if(delbtn) delbtn.style.display=''; }
-    else   { if(curr) curr.style.display='none'; if(delbtn) delbtn.style.display='none'; }
-  });
+  // PDF admin cards are handled by loadInfoForm via RTDB directly
 }
 
 // Live listener — updates every visitor's page in real time
@@ -1543,12 +1543,34 @@ async function loadInfoForm(){
     const d = snap.exists ? snap.data() : {};
     settingsCache = d;
     applySettingsToForms(d);
-  } catch(e){ console.warn('loadInfoForm error:', e); }
+    // Also load RTDB PDF info for admin
+    ['prop','wsdc'].forEach(key=>{
+      if(!rtdb) return;
+      rtdb.ref('pdfs/'+key).once('value').then(s=>{
+        if(!s.exists()) return;
+        const pd=s.val();
+        const curr=document.getElementById('pdf-'+key+'-current');
+        const cname=document.getElementById('pdf-'+key+'-curr-name');
+        const csize=document.getElementById('pdf-'+key+'-curr-size');
+        const delbtn=document.getElementById('del-'+key+'-pdf');
+        const nameInp=document.getElementById('pdf-'+key+'-name');
+        if(curr) curr.style.display='';
+        if(cname) cname.textContent=pd.name||'';
+        if(csize) csize.textContent=pd.size?Math.round(pd.size/1024)+'KB':'';
+        if(delbtn) delbtn.style.display='';
+        if(nameInp&&pd.name&&!nameInp.value) nameInp.value=pd.name;
+      }).catch(()=>{});
+    });
+  } catch(e){
+    console.warn('loadInfoForm error:', e);
+    toast('Error cargando datos: '+e.message);
+  }
 }
 
 async function saveTextos(){
-  const get = id => { const el=document.getElementById(id); return el ? el.value.trim() : ''; };
-  const data = {
+  const get = id => { const el=document.getElementById(id); return el ? el.value.trim() : null; };
+  // Build update — only include fields whose inputs exist in DOM
+  const fields = {
     bio1:        get('bio1'),
     bio2:        get('bio2'),
     mision:      get('txt-mision-inp'),
@@ -1560,13 +1582,20 @@ async function saveTextos(){
     mocionKey:   get('mocion-key-inp'),
     mocionSub:   get('mocion-sub-inp'),
   };
-  const clean = {};
-  Object.keys(data).forEach(k=>{ if(data[k]) clean[k]=data[k]; });
-  if(!Object.keys(clean).length){ toast('No hay cambios para guardar'); return; }
+  // Only send fields whose input actually exists (not null = input missing from DOM)
+  const data = {};
+  Object.keys(fields).forEach(k=>{ if(fields[k] !== null) data[k] = fields[k]; });
+  if(!Object.keys(data).length){ toast('No se encontraron campos'); return; }
   try{
-    await db.collection('settings').doc('main').set(clean, {merge:true});
-    toast('\u2713 Cambios guardados \u2014 visibles para todos al instante');
-  } catch(e){ toast('Error al guardar: ' + e.message); }
+    await db.collection('settings').doc('main').set(data, {merge:true});
+    toast('\u2713 Guardado \u2014 visible para todos al instante');
+  } catch(e){
+    if(e.code==='permission-denied'||e.message.includes('PERMISSION_DENIED')){
+      toast('\u2715 Sin permisos. Verifica las Firestore Rules.');
+    } else {
+      toast('Error: ' + e.message);
+    }
+  }
 }
 
 async function saveInfo(){ await saveTextos(); }
