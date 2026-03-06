@@ -9,6 +9,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js"></script>
 <style>
 :root{
   --orange:#FF6B00;--orange-deep:#D44E00;
@@ -301,6 +302,31 @@ footer{background:#060100;border-top:1px solid rgba(255,107,0,.14);text-align:ce
 .loader{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,107,0,.25);border-top-color:var(--orange);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px;}
 @keyframes spin{to{transform:rotate(360deg);}}
 
+/* ── DOCUMENTOS PDF ───────────────────── */
+#documentos{background:linear-gradient(180deg,#0c0300,#0a0200);}
+.docs-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:clamp(.8rem,2vw,1.5rem);}
+.doc-card{background:rgba(255,107,0,.06);border:1px solid var(--border);border-radius:18px;padding:clamp(1.2rem,3vw,1.8rem);display:flex;align-items:center;gap:1.2rem;transition:all .3s;position:relative;overflow:hidden;}
+.doc-card:hover{background:rgba(255,107,0,.1);border-color:rgba(255,107,0,.42);transform:translateY(-4px);box-shadow:0 18px 50px rgba(255,107,0,.14);}
+.doc-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--orange),transparent);opacity:0;transition:opacity .3s;}
+.doc-card:hover::after{opacity:1;}
+.doc-icon{width:52px;height:52px;border-radius:14px;background:rgba(255,107,0,.1);border:1px solid rgba(255,107,0,.22);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.doc-icon svg{width:24px;height:24px;}
+.doc-info{flex:1;min-width:0;}
+.doc-label{font-size:.58rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--orange);margin-bottom:.25rem;}
+.doc-title{font-family:var(--font);font-size:clamp(.9rem,2vw,1.05rem);font-weight:700;color:#fff;margin-bottom:.25rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.doc-meta{font-size:.72rem;color:rgba(255,255,255,.38);}
+.doc-actions{display:flex;flex-direction:column;gap:.4rem;flex-shrink:0;}
+.doc-btn{display:inline-flex;align-items:center;gap:5px;font-size:.6rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:.38rem .9rem;border-radius:20px;text-decoration:none;cursor:pointer;border:none;transition:all .2s;white-space:nowrap;font-family:var(--font);}
+.doc-btn.view{background:rgba(255,107,0,.12);border:1px solid rgba(255,107,0,.3);color:var(--orange);}
+.doc-btn.view:hover{background:rgba(255,107,0,.25);}
+.doc-btn.dl{background:rgba(52,211,153,.09);border:1px solid rgba(52,211,153,.28);color:#6ee7b7;}
+.doc-btn.dl:hover{background:rgba(52,211,153,.22);}
+.upload-prog{margin-top:.7rem;background:rgba(255,107,0,.08);border-radius:8px;overflow:hidden;height:6px;display:none;}
+.upload-prog-bar{height:100%;background:linear-gradient(90deg,var(--orange),var(--orange-deep));border-radius:8px;width:0%;transition:width .3s;}
+.upload-label{display:flex;align-items:center;justify-content:center;gap:.5rem;background:rgba(255,107,0,.07);border:1px dashed rgba(255,107,0,.3);border-radius:10px;padding:.8rem 1.2rem;cursor:pointer;transition:all .2s;font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--orange);}
+.upload-label:hover{background:rgba(255,107,0,.14);}
+.upload-label input{display:none;}
+
 /* ── REVEAL & RESPONSIVE ─────────────── */
 .reveal{opacity:0;transform:translateY(28px);transition:opacity .65s ease,transform .65s ease;}
 .reveal.vis{opacity:1;transform:translateY(0);}
@@ -335,6 +361,7 @@ footer{background:#060100;border-top:1px solid rgba(255,107,0,.14);text-align:ce
     <a href="#mision">Misión</a>
     <a href="#doris">Convenor</a>
     <a href="#propuestas">Propuestas</a>
+    <a href="#documentos">Documentos</a>
     <a href="#debate">Debate</a>
     <a href="#" class="nav-btn" onclick="showLogin(event)">Admin</a>
   </div>
@@ -346,6 +373,7 @@ footer{background:#060100;border-top:1px solid rgba(255,107,0,.14);text-align:ce
   <a href="#mision" onclick="closeMobile()">Misión</a>
   <a href="#doris" onclick="closeMobile()">Convenor</a>
   <a href="#propuestas" onclick="closeMobile()">Propuestas</a>
+  <a href="#documentos" onclick="closeMobile()">Documentos</a>
   <a href="#debate" onclick="closeMobile()">Debate</a>
   <a href="#" class="m-admin" onclick="closeMobile();showLogin(event)">Admin</a>
 </div>
@@ -379,19 +407,19 @@ footer{background:#060100;border-top:1px solid rgba(255,107,0,.14);text-align:ce
           <svg viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
         </div>
         <h3>Misión</h3>
-        <p>Fortalecer la cultura del debate académico en todo el territorio nacional, promoviendo el pensamiento crítico, la oratoria de excelencia y la formación integral de líderes. El V CND es el escenario donde las voces más brillantes de la nueva generación se encuentran, debaten y transforman su realidad.</p>
+        <p id="txt-mision">Fortalecer la cultura del debate académico en todo el territorio nacional, promoviendo el pensamiento crítico, la oratoria de excelencia y la formación integral de líderes. El V CND es el escenario donde las voces más brillantes de la nueva generación se encuentran, debaten y transforman su realidad.</p>
       </div>
       <div class="mv-card reveal" style="transition-delay:.1s">
         <div class="mv-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
         </div>
         <h3>Visión</h3>
-        <p>Ser el campeonato de debate más transformador del país, donde cada argumento sea una semilla de cambio y cada debatiente una voz inquebrantable del futuro. Un ecosistema donde el rigor académico, la diversidad de perspectivas y la pasión por la verdad sean los pilares de una sociedad más justa y razonada.</p>
+        <p id="txt-vision">Ser el campeonato de debate más transformador del país, donde cada argumento sea una semilla de cambio y cada debatiente una voz inquebrantable del futuro. Un ecosistema donde el rigor académico, la diversidad de perspectivas y la pasión por la verdad sean los pilares de una sociedad más justa y razonada.</p>
       </div>
     </div>
     <div class="mv-mantra reveal" style="transition-delay:.2s">
-      <div class="mv-mantra-t">CND Inquebrantable</div>
-      <div class="mv-mantra-s">El debate es nuestra herramienta &nbsp;·&nbsp; La verdad es nuestra meta</div>
+      <div class="mv-mantra-t" id="txt-mantra-t">CND Inquebrantable</div>
+      <div class="mv-mantra-s" id="txt-mantra-s">La transformación toma tiempo, pero cuando sucede marca un nuevo comienzo</div>
     </div>
   </div>
 </section>
@@ -413,7 +441,7 @@ footer{background:#060100;border-top:1px solid rgba(255,107,0,.14);text-align:ce
                 <path d="M200 130 C170 160 100 180 80 200 C60 220 100 240 140 220 C170 204 190 165 200 130Z"/>
                 <path d="M200 130 C230 160 300 180 320 200 C340 220 300 240 260 220 C230 204 210 165 200 130Z"/>
               </svg>
-              <p style="font-size:.7rem;letter-spacing:2px;color:rgba(255,255,255,.45);text-align:center">Coloca la foto en<br><strong style="color:var(--orange)">imagenes/doris.jpg</strong></p>
+              <p style="font-size:.7rem;letter-spacing:2px;color:rgba(255,255,255,.45);text-align:center">Coloca la foto en<br><strong style="color:var(--orange)">imagenes/doris.jpeg</strong></p>
             </div>
           </div>
         </div>
@@ -481,6 +509,65 @@ footer{background:#060100;border-top:1px solid rgba(255,107,0,.14);text-align:ce
   </div>
 </section>
 
+<!-- DOCUMENTOS PDF -->
+<section id="documentos">
+  <div class="sw">
+    <p class="s-label reveal">Documentos Oficiales</p>
+    <h2 class="s-title reveal">Recursos del CND</h2>
+    <div class="s-rule reveal"></div>
+    <div class="docs-grid">
+      <div class="doc-card reveal">
+        <div class="doc-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/>
+            <line x1="16" y1="17" x2="8" y2="17"/>
+          </svg>
+        </div>
+        <div class="doc-info">
+          <div class="doc-label">Documento de Propuestas</div>
+          <div class="doc-title" id="pdf-prop-title">Propuestas V CND</div>
+          <div class="doc-meta" id="pdf-prop-meta">No disponible aún</div>
+        </div>
+        <div class="doc-actions" id="pdf-prop-actions">
+          <span style="color:rgba(255,255,255,.25);font-size:.72rem">Próximamente</span>
+        </div>
+      </div>
+      <div class="doc-card reveal" style="transition-delay:.1s">
+        <div class="doc-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+          </svg>
+        </div>
+        <div class="doc-info">
+          <div class="doc-label">Manual Oficial</div>
+          <div class="doc-title" id="pdf-wsdc-title">Manual WSDC</div>
+          <div class="doc-meta" id="pdf-wsdc-meta">No disponible aún</div>
+        </div>
+        <div class="doc-actions" id="pdf-wsdc-actions">
+          <span style="color:rgba(255,255,255,.25);font-size:.72rem">Próximamente</span>
+        </div>
+      </div>
+    </div>
+    <!-- PDF Viewer Modal -->
+    <div id="pdf-modal" style="display:none;position:fixed;inset:0;z-index:9500">
+      <div onclick="closePdfModal()" style="position:absolute;inset:0;background:rgba(0,0,0,.85);backdrop-filter:blur(8px)"></div>
+      <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:min(95vw,900px);height:min(90vh,700px);background:#0d0300;border:1px solid var(--border);border-radius:14px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 40px 100px rgba(255,107,0,.22)">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:.9rem 1.2rem;background:linear-gradient(90deg,var(--orange),var(--orange-deep));flex-shrink:0">
+          <span id="pdf-modal-title" style="font-family:var(--font);font-weight:900;letter-spacing:2px;text-transform:uppercase;font-size:clamp(.75rem,1.5vw,.9rem)"></span>
+          <div style="display:flex;gap:.6rem;align-items:center">
+            <a id="pdf-modal-dl" href="#" download target="_blank" style="background:rgba(255,255,255,.2);color:#fff;font-size:.65rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:.35rem .9rem;border-radius:20px;text-decoration:none;transition:background .2s">Descargar</a>
+            <button onclick="closePdfModal()" style="background:rgba(0,0,0,.3);border:none;color:#fff;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center">✕</button>
+          </div>
+        </div>
+        <iframe id="pdf-modal-frame" src="" style="width:100%;flex:1;border:none"></iframe>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- DEBATE -->
 <section id="debate">
   <div class="sw">
@@ -514,10 +601,11 @@ footer{background:#060100;border-top:1px solid rgba(255,107,0,.14);text-align:ce
       <button class="logout-btn" onclick="adminLogout()">Cerrar sesión</button>
     </div>
     <div class="ai-tabs">
-      <button class="a-tab active" onclick="sTab('tab-draw',this)">Draw de Debate</button>
+      <button class="a-tab active" onclick="sTab('tab-draw',this)">Draw</button>
       <button class="a-tab" onclick="sTab('tab-prop',this)">Propuestas</button>
       <button class="a-tab" onclick="sTab('tab-tl',this)">Trayectoria</button>
-      <button class="a-tab" onclick="sTab('tab-info',this)">Info del Evento</button>
+      <button class="a-tab" onclick="sTab('tab-textos',this)">Textos</button>
+      <button class="a-tab" onclick="sTab('tab-pdfs',this)">PDFs</button>
     </div>
 
     <!-- DRAW TAB -->
@@ -595,13 +683,98 @@ footer{background:#060100;border-top:1px solid rgba(255,107,0,.14);text-align:ce
       </div>
     </div>
 
-    <!-- INFO TAB -->
-    <div class="a-panel" id="tab-info">
+    <!-- TEXTOS TAB -->
+    <div class="a-panel" id="tab-textos">
       <div class="a-card">
-        <div class="a-title">Información del Evento</div>
-        <div class="fg"><label>Bio de Doris Mora (Párrafo 1)</label><textarea id="bio1" placeholder="Primera parte de la bio..."></textarea></div>
-        <div class="fg"><label>Bio de Doris Mora (Párrafo 2)</label><textarea id="bio2" placeholder="Segunda parte de la bio..."></textarea></div>
-        <button class="submit-btn" onclick="saveInfo()">Guardar Cambios</button>
+        <div class="a-title">Misión &amp; Visión</div>
+        <div class="fg">
+          <label>Texto de Misión</label>
+          <textarea id="txt-mision-inp" style="min-height:100px" placeholder="Texto de la sección Misión..."></textarea>
+        </div>
+        <div class="fg">
+          <label>Texto de Visión</label>
+          <textarea id="txt-vision-inp" style="min-height:100px" placeholder="Texto de la sección Visión..."></textarea>
+        </div>
+        <button class="submit-btn" onclick="saveTextos()">Guardar Misión &amp; Visión</button>
+      </div>
+      <div class="a-card">
+        <div class="a-title">Banner Inquebrantable</div>
+        <div class="fg">
+          <label>Título del Banner (Ej: CND Inquebrantable)</label>
+          <input type="text" id="txt-mantra-t-inp" placeholder="CND Inquebrantable">
+        </div>
+        <div class="fg">
+          <label>Subtexto del Banner</label>
+          <input type="text" id="txt-mantra-s-inp" placeholder="Subtexto del banner...">
+        </div>
+        <button class="submit-btn" onclick="saveTextos()">Guardar Banner</button>
+      </div>
+      <div class="a-card">
+        <div class="a-title">Bio de Doris Mora</div>
+        <div class="fg">
+          <label>Párrafo 1</label>
+          <textarea id="bio1" style="min-height:100px" placeholder="Primera parte de la bio..."></textarea>
+        </div>
+        <div class="fg">
+          <label>Párrafo 2</label>
+          <textarea id="bio2" style="min-height:100px" placeholder="Segunda parte de la bio..."></textarea>
+        </div>
+        <button class="submit-btn" onclick="saveTextos()">Guardar Bio</button>
+      </div>
+    </div>
+
+    <!-- PDFs TAB -->
+    <div class="a-panel" id="tab-pdfs">
+      <div class="a-card">
+        <div class="a-title">Documento de Propuestas (PDF)</div>
+        <div class="fg">
+          <label>Título visible en la página</label>
+          <input type="text" id="pdf-prop-name" placeholder="Ej: Propuestas V CND 2025">
+        </div>
+        <div class="fg" style="margin-bottom:.5rem">
+          <label>Subir PDF de Propuestas</label>
+          <label class="upload-label">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Seleccionar archivo PDF
+            <input type="file" accept="application/pdf" id="pdf-prop-file" onchange="uploadPdf('prop')">
+          </label>
+          <div class="upload-prog" id="prog-prop"><div class="upload-prog-bar" id="prog-prop-bar"></div></div>
+          <div id="pdf-prop-status" style="font-size:.72rem;color:rgba(255,255,255,.4);margin-top:.4rem"></div>
+        </div>
+        <div id="pdf-prop-current" style="display:none;margin-bottom:.8rem">
+          <div style="font-size:.6rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--orange);margin-bottom:.3rem">Archivo actual</div>
+          <div id="pdf-prop-curr-name" style="font-size:.82rem;color:rgba(255,255,255,.7)"></div>
+        </div>
+        <div style="display:flex;gap:.7rem;flex-wrap:wrap">
+          <button class="submit-btn" onclick="savePdfMeta('prop')">Guardar Cambios</button>
+          <button class="submit-btn" id="del-prop-pdf" style="background:rgba(255,80,80,.15);box-shadow:none;color:#ff9999;display:none" onclick="deletePdf('prop')">Eliminar PDF</button>
+        </div>
+      </div>
+
+      <div class="a-card">
+        <div class="a-title">Manual WSDC (PDF)</div>
+        <div class="fg">
+          <label>Título visible en la página</label>
+          <input type="text" id="pdf-wsdc-name" placeholder="Ej: Manual Oficial WSDC 2024">
+        </div>
+        <div class="fg" style="margin-bottom:.5rem">
+          <label>Subir PDF del Manual WSDC</label>
+          <label class="upload-label">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Seleccionar archivo PDF
+            <input type="file" accept="application/pdf" id="pdf-wsdc-file" onchange="uploadPdf('wsdc')">
+          </label>
+          <div class="upload-prog" id="prog-wsdc"><div class="upload-prog-bar" id="prog-wsdc-bar"></div></div>
+          <div id="pdf-wsdc-status" style="font-size:.72rem;color:rgba(255,255,255,.4);margin-top:.4rem"></div>
+        </div>
+        <div id="pdf-wsdc-current" style="display:none;margin-bottom:.8rem">
+          <div style="font-size:.6rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--orange);margin-bottom:.3rem">Archivo actual</div>
+          <div id="pdf-wsdc-curr-name" style="font-size:.82rem;color:rgba(255,255,255,.7)"></div>
+        </div>
+        <div style="display:flex;gap:.7rem;flex-wrap:wrap">
+          <button class="submit-btn" onclick="savePdfMeta('wsdc')">Guardar Cambios</button>
+          <button class="submit-btn" id="del-wsdc-pdf" style="background:rgba(255,80,80,.15);box-shadow:none;color:#ff9999;display:none" onclick="deletePdf('wsdc')">Eliminar PDF</button>
+        </div>
       </div>
     </div>
   </div>
@@ -1129,24 +1302,169 @@ async function delTlNode(docId){
 
 /* ══════════════════════════════════════════════
    SETTINGS — Firestore doc: "settings/main"
+   Covers: bio, mission, vision, mantra, pdf meta
 ══════════════════════════════════════════════ */
+const storage = firebase.storage();
+
 db.collection('settings').doc('main').onSnapshot(snap=>{
   if(!snap.exists) return;
   const d = snap.data();
   settingsCache = d;
-  if(d.bio1) document.getElementById('bio-t1').textContent=d.bio1;
-  if(d.bio2) document.getElementById('bio-t2').textContent=d.bio2;
+  // Bio
+  if(d.bio1) document.getElementById('bio-t1').textContent = d.bio1;
+  if(d.bio2) document.getElementById('bio-t2').textContent = d.bio2;
+  // Mission & Vision
+  if(d.mision) document.getElementById('txt-mision').textContent = d.mision;
+  if(d.vision) document.getElementById('txt-vision').textContent = d.vision;
+  // Mantra
+  if(d.mantraT) document.getElementById('txt-mantra-t').textContent = d.mantraT;
+  if(d.mantraS) document.getElementById('txt-mantra-s').textContent = d.mantraS;
+  // PDFs
+  updatePdfCard('prop', d.pdfPropUrl, d.pdfPropName);
+  updatePdfCard('wsdc', d.pdfWsdcUrl, d.pdfWsdcName);
 });
+
 function loadInfoForm(){
-  if(settingsCache.bio1) document.getElementById('bio1').value=settingsCache.bio1;
-  if(settingsCache.bio2) document.getElementById('bio2').value=settingsCache.bio2;
+  const d = settingsCache;
+  if(d.bio1)    document.getElementById('bio1').value = d.bio1;
+  if(d.bio2)    document.getElementById('bio2').value = d.bio2;
+  if(d.mision)  document.getElementById('txt-mision-inp').value = d.mision;
+  if(d.vision)  document.getElementById('txt-vision-inp').value = d.vision;
+  if(d.mantraT) document.getElementById('txt-mantra-t-inp').value = d.mantraT;
+  if(d.mantraS) document.getElementById('txt-mantra-s-inp').value = d.mantraS;
+  if(d.pdfPropName) document.getElementById('pdf-prop-name').value = d.pdfPropName;
+  if(d.pdfWsdcName) document.getElementById('pdf-wsdc-name').value = d.pdfWsdcName;
+  // Show admin PDF current info
+  if(d.pdfPropUrl){
+    document.getElementById('pdf-prop-current').style.display='';
+    document.getElementById('pdf-prop-curr-name').textContent = d.pdfPropName||'Archivo subido';
+    document.getElementById('del-prop-pdf').style.display='';
+  }
+  if(d.pdfWsdcUrl){
+    document.getElementById('pdf-wsdc-current').style.display='';
+    document.getElementById('pdf-wsdc-curr-name').textContent = d.pdfWsdcName||'Archivo subido';
+    document.getElementById('del-wsdc-pdf').style.display='';
+  }
 }
-async function saveInfo(){
-  const data={bio1:document.getElementById('bio1').value.trim(),bio2:document.getElementById('bio2').value.trim()};
+
+async function saveTextos(){
+  const data = {
+    bio1:    document.getElementById('bio1').value.trim(),
+    bio2:    document.getElementById('bio2').value.trim(),
+    mision:  document.getElementById('txt-mision-inp').value.trim(),
+    vision:  document.getElementById('txt-vision-inp').value.trim(),
+    mantraT: document.getElementById('txt-mantra-t-inp').value.trim(),
+    mantraS: document.getElementById('txt-mantra-s-inp').value.trim(),
+  };
+  // Remove empty keys so we don't overwrite with blank
+  Object.keys(data).forEach(k=>{ if(!data[k]) delete data[k]; });
   try{
     await db.collection('settings').doc('main').set(data,{merge:true});
-    toast('Información guardada ✓');
+    toast('Textos guardados ✓ — visibles en toda la página');
   }catch(e){toast('Error: '+e.message);}
+}
+
+// Keep backward compat
+async function saveInfo(){ await saveTextos(); }
+
+/* PDF UPLOAD */
+function uploadPdf(key){
+  const file = document.getElementById(`pdf-${key}-file`).files[0];
+  if(!file){ toast('Selecciona un PDF primero'); return; }
+  if(file.type !== 'application/pdf'){ toast('Solo se aceptan archivos PDF'); return; }
+
+  const prog     = document.getElementById(`prog-${key}`);
+  const progBar  = document.getElementById(`prog-${key}-bar`);
+  const status   = document.getElementById(`pdf-${key}-status`);
+  prog.style.display = '';
+  status.textContent = 'Subiendo...';
+
+  const ref = storage.ref(`pdfs/${key}/${file.name}`);
+  const task = ref.put(file);
+
+  task.on('state_changed',
+    snap => {
+      const pct = Math.round(snap.bytesTransferred / snap.totalBytes * 100);
+      progBar.style.width = pct + '%';
+      status.textContent = `Subiendo... ${pct}%`;
+    },
+    err => {
+      prog.style.display = 'none';
+      status.textContent = 'Error al subir: ' + err.message;
+      toast('Error al subir PDF');
+    },
+    async () => {
+      const url = await task.snapshot.ref.getDownloadURL();
+      const nameInput = document.getElementById(`pdf-${key}-name`).value.trim() || file.name;
+      const saveData = {};
+      saveData[`pdf${cap(key)}Url`]  = url;
+      saveData[`pdf${cap(key)}Name`] = nameInput;
+      saveData[`pdf${cap(key)}File`] = file.name;
+      await db.collection('settings').doc('main').set(saveData, {merge:true});
+      prog.style.display = 'none';
+      progBar.style.width = '0%';
+      status.textContent = '✓ PDF subido correctamente';
+      document.getElementById(`pdf-${key}-current`).style.display = '';
+      document.getElementById(`pdf-${key}-curr-name`).textContent = nameInput;
+      document.getElementById(`del-${key}-pdf`).style.display = '';
+      toast(`PDF ${nameInput} subido ✓`);
+    }
+  );
+}
+
+async function savePdfMeta(key){
+  const name = document.getElementById(`pdf-${key}-name`).value.trim();
+  if(!name){ toast('Escribe un título para el documento'); return; }
+  const data = {};
+  data[`pdf${cap(key)}Name`] = name;
+  await db.collection('settings').doc('main').set(data,{merge:true});
+  toast('Título actualizado ✓');
+}
+
+async function deletePdf(key){
+  if(!confirm('¿Eliminar este PDF? Se quitará de la página pública.')) return;
+  const data = {};
+  data[`pdf${cap(key)}Url`]  = firebase.firestore.FieldValue.delete();
+  data[`pdf${cap(key)}Name`] = firebase.firestore.FieldValue.delete();
+  data[`pdf${cap(key)}File`] = firebase.firestore.FieldValue.delete();
+  await db.collection('settings').doc('main').update(data);
+  document.getElementById(`pdf-${key}-current`).style.display = 'none';
+  document.getElementById(`del-${key}-pdf`).style.display = 'none';
+  toast('PDF eliminado');
+}
+
+function cap(s){ return s.charAt(0).toUpperCase() + s.slice(1); }
+
+/* PUBLIC PDF CARD UPDATE */
+function updatePdfCard(key, url, name){
+  const titleEl   = document.getElementById(`pdf-${key}-title`);
+  const metaEl    = document.getElementById(`pdf-${key}-meta`);
+  const actionsEl = document.getElementById(`pdf-${key}-actions`);
+  if(!titleEl) return;
+  if(url){
+    if(name) titleEl.textContent = name;
+    metaEl.textContent = 'Disponible · Haz clic para ver';
+    actionsEl.innerHTML = `
+      <button class="doc-btn view" onclick="openPdfModal('${url}','${(name||'Documento').replace(/'/g,"\\'")}')">Ver PDF</button>
+      <a class="doc-btn dl" href="${url}" target="_blank" download>Descargar</a>`;
+  } else {
+    metaEl.textContent = 'No disponible aún';
+    actionsEl.innerHTML = '<span style="color:rgba(255,255,255,.25);font-size:.72rem">Próximamente</span>';
+  }
+}
+
+/* PDF MODAL */
+function openPdfModal(url, title){
+  document.getElementById('pdf-modal-title').textContent = title;
+  document.getElementById('pdf-modal-frame').src = url;
+  document.getElementById('pdf-modal-dl').href = url;
+  document.getElementById('pdf-modal').style.display = '';
+  document.body.style.overflow = 'hidden';
+}
+function closePdfModal(){
+  document.getElementById('pdf-modal').style.display = 'none';
+  document.getElementById('pdf-modal-frame').src = '';
+  document.body.style.overflow = '';
 }
 
 /* ── TOAST ─────────────────────────────────────── */
