@@ -3,13 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Security Headers -->
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta http-equiv="X-Frame-Options" content="DENY">
+<meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+<meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=()">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: 'unsafe-inline' 'unsafe-eval'; frame-src https://firebasestorage.googleapis.com https://*.firebaseapp.com;">
 <title>V CND – DORIS MORA | CONVENOR</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700;1,300&display=swap" rel="stylesheet">
 <!-- Firebase compat SDKs -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 <style>
 :root{
   --orange:#FF6B00;--orange-deep:#D44E00;
@@ -185,6 +191,125 @@ section{position:relative;z-index:1;}
 .prop-num{font-family:var(--font);font-size:3.8rem;font-weight:900;color:rgba(255,107,0,.1);position:absolute;top:.2rem;right:.7rem;line-height:1;user-select:none;}
 .prop-card h4{font-family:var(--font);font-size:clamp(.92rem,1.9vw,1.1rem);font-weight:700;color:#fff;margin-bottom:.55rem;}
 .prop-card p{font-size:clamp(.78rem,1.3vw,.86rem);line-height:1.75;color:rgba(255,255,255,.63);}
+
+/* ── MOCIÓN CENTRAL CARD ─────────────── */
+.mocion-wrap{max-width:680px;margin:0 auto;}
+
+/* ¿SABÍAS? eyebrow */
+.mocion-eyebrow{
+  display:flex;align-items:center;gap:1rem;
+  margin-bottom:1.8rem;
+  justify-content:center;
+}
+.mocion-eye-line{
+  flex:1;max-width:80px;
+  height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,107,0,.4));
+}
+.mocion-eyebrow .mocion-eye-line:last-child{
+  background:linear-gradient(90deg,rgba(255,107,0,.4),transparent);
+}
+.mocion-eye-txt{
+  font-family:var(--font);
+  font-size:clamp(.9rem,2.2vw,1.25rem);
+  font-weight:900;
+  letter-spacing:6px;
+  color:var(--orange);
+  text-transform:uppercase;
+  opacity:.85;
+}
+
+.mocion-card{
+  position:relative;overflow:hidden;
+  background:linear-gradient(160deg,rgba(255,107,0,.07) 0%,rgba(80,18,0,.22) 60%,rgba(10,2,0,.6) 100%);
+  border:1px solid rgba(255,107,0,.28);
+  border-radius:24px;
+  padding:clamp(2rem,5vw,3.5rem) clamp(1.8rem,5vw,3.5rem);
+  text-align:center;
+  box-shadow:0 0 80px rgba(255,107,0,.07), inset 0 1px 0 rgba(255,150,0,.12);
+}
+.mocion-card::before{
+  content:'';position:absolute;top:-100px;left:50%;transform:translateX(-50%);
+  width:480px;height:480px;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,107,0,.09) 0%,transparent 60%);
+  pointer-events:none;
+}
+.mocion-top{margin-bottom:1.6rem;}
+.mocion-badge{
+  display:inline-block;
+  font-size:clamp(.52rem,.85vw,.62rem);font-weight:700;letter-spacing:4px;text-transform:uppercase;
+  color:rgba(255,255,255,.45);border:1px solid rgba(255,107,0,.22);
+  padding:.3rem 1.1rem;border-radius:30px;
+  background:rgba(255,107,0,.05);
+}
+
+/* uniform question size */
+.mocion-q{
+  display:flex;flex-direction:column;align-items:center;
+  gap:.4em;
+  font-family:var(--font);
+  margin-bottom:1.8rem;
+}
+.mq-line1{
+  font-size:clamp(1.3rem,3vw,2rem);
+  font-weight:800;
+  color:rgba(255,255,255,.8);
+  letter-spacing:-.3px;
+  line-height:1.2;
+}
+.mq-blank-row{ line-height:1.2; }
+.mocion-blank{
+  display:inline-block;
+  font-size:clamp(1.3rem,3vw,2rem);
+  font-weight:800;
+  color:rgba(255,255,255,.42);
+  border-bottom:2px solid rgba(255,107,0,.55);
+  padding:0 .35em .05em;
+  letter-spacing:.01em;
+  line-height:1.2;
+}
+.mq-key-row{
+  display:block;
+  text-align:center;
+  line-height:1.15;
+}
+.mocion-key{
+  display:inline;
+  font-size:clamp(1.3rem,3vw,2rem);
+  font-weight:800;
+  color:var(--orange);
+  text-shadow:0 0 30px rgba(255,107,0,.3);
+  letter-spacing:-.3px;
+  word-break:break-word;
+}
+.mq-qmark{
+  display:inline;
+  font-size:inherit;
+  font-weight:inherit;
+  color:var(--orange);
+  letter-spacing:-.3px;
+}
+
+/* divider */
+.mocion-rule{
+  width:48px;height:2px;
+  background:linear-gradient(90deg,transparent,rgba(255,107,0,.55),transparent);
+  margin:0 auto 1.4rem;
+}
+.mocion-sub{
+  font-size:clamp(.78rem,1.4vw,.88rem);
+  color:rgba(255,255,255,.35);
+  letter-spacing:.3px;
+  line-height:1.75;
+  font-style:italic;
+  max-width:440px;
+  margin:0 auto;
+}
+.mocion-deco{
+  position:absolute;bottom:-30px;right:-30px;
+  pointer-events:none;
+  transform:rotate(-12deg);
+}
 
 /* ── DEBATE ───────────────────────────── */
 #debate{background:linear-gradient(180deg,#0d0300,#100500);}
@@ -490,21 +615,42 @@ footer{background:#060100;border-top:1px solid rgba(255,107,0,.14);text-align:ce
   </div>
 </section>
 
-<!-- PROPUESTAS -->
+<!-- PROPUESTAS / MOCIÓN CENTRAL -->
 <section id="propuestas">
   <div class="sw">
-    <p class="s-label reveal">Catálogo</p>
-    <h2 class="s-title reveal">Propuestas</h2>
-    <div class="s-rule reveal"></div>
-    <div class="prop-grid" id="prop-grid"></div>
-    <div class="no-draw" id="no-prop" style="display:none">
-      <div class="no-draw-ico">
-        <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="rgba(255,107,0,0.5)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-          <polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
-        </svg>
+    <div class="mocion-wrap reveal">
+
+      <!-- label superior -->
+      <div class="mocion-eyebrow">
+        <span class="mocion-eye-line"></span>
+        <span class="mocion-eye-txt">¿SABÍAS?</span>
+        <span class="mocion-eye-line"></span>
       </div>
-      <p>El catálogo de propuestas está siendo preparado.<br>Próximamente disponible.</p>
+
+      <div class="mocion-card">
+        <div class="mocion-top">
+          <span class="mocion-badge">Moción Central · V CND</span>
+        </div>
+        <div class="mocion-q">
+          <div class="mq-line1">¿Qué significa</div>
+          <div class="mq-blank-row">
+            <span class="mocion-blank" id="mocion-blank">ser</span>
+          </div>
+          <div class="mq-key-row">
+            <span class="mocion-key" id="mocion-key">Monarca Inquebrantable<span class="mq-qmark">?</span></span>
+          </div>
+        </div>
+        <div class="mocion-rule"></div>
+        <div class="mocion-sub" id="mocion-sub">La respuesta se construye en cada ronda, en cada argumento, en cada debatiente.</div>
+        <div class="mocion-deco" aria-hidden="true">
+          <svg width="260" height="180" viewBox="0 0 400 260" fill="rgba(255,107,0,0.04)">
+            <path d="M200 130 C160 80 60 40 20 70 C-10 95 30 150 80 160 C120 168 170 148 200 130Z"/>
+            <path d="M200 130 C240 80 340 40 380 70 C410 95 370 150 320 160 C280 168 230 148 200 130Z"/>
+            <path d="M200 130 C170 160 100 180 80 200 C60 220 100 240 140 220 C170 204 190 165 200 130Z"/>
+            <path d="M200 130 C230 160 300 180 320 200 C340 220 300 240 260 220 C230 204 210 165 200 130Z"/>
+          </svg>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -698,6 +844,17 @@ footer{background:#060100;border-top:1px solid rgba(255,107,0,.14);text-align:ce
         <button class="submit-btn" onclick="saveTextos()">Guardar Misión &amp; Visión</button>
       </div>
       <div class="a-card">
+        <div class="a-title">Sección Propuestas</div>
+        <div class="two">
+          <div class="fg"><label>Etiqueta superior</label><input type="text" id="txt-prop-label-inp" placeholder="La Pregunta del Torneo"></div>
+        </div>
+        <div class="a-title" style="font-size:.82rem;margin-top:.5rem">Moción Central ¿Qué significa __ <span style="color:var(--orange)">X</span>?</div>
+        <div class="fg"><label>El espacio en blanco (parte editable)</label><input type="text" id="mocion-blank-inp" placeholder="Ej: ser · hacer · vivir · liderar"></div>
+        <div class="fg"><label>Palabra(s) en Naranja</label><input type="text" id="mocion-key-inp" placeholder="Ej: Monarca Inquebrantable"></div>
+        <div class="fg"><label>Subtexto debajo de la pregunta</label><input type="text" id="mocion-sub-inp" placeholder="Frase inspiracional..."></div>
+        <button class="submit-btn" onclick="saveTextos()">Guardar Moción</button>
+      </div>
+      <div class="a-card">
         <div class="a-title">Banner Inquebrantable</div>
         <div class="fg">
           <label>Título del Banner (Ej: CND Inquebrantable)</label>
@@ -723,59 +880,63 @@ footer{background:#060100;border-top:1px solid rgba(255,107,0,.14);text-align:ce
       </div>
     </div>
 
-    <!-- PDFs TAB -->
+    <!-- PDFs TAB — Realtime Database (base64, gratis) -->
     <div class="a-panel" id="tab-pdfs">
+
       <div class="a-card">
-        <div class="a-title">Documento de Propuestas (PDF)</div>
+        <div class="a-title">Documento de Propuestas</div>
         <div class="fg">
           <label>Título visible en la página</label>
           <input type="text" id="pdf-prop-name" placeholder="Ej: Propuestas V CND 2025">
         </div>
-        <div class="fg" style="margin-bottom:.5rem">
-          <label>Subir PDF de Propuestas</label>
-          <label class="upload-label">
+        <div class="fg">
+          <label>Seleccionar archivo PDF</label>
+          <label class="upload-label" id="lbl-prop">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-            Seleccionar archivo PDF
-            <input type="file" accept="application/pdf" id="pdf-prop-file" onchange="uploadPdf('prop')">
+            <span id="lbl-prop-txt">Elige un PDF desde tu dispositivo</span>
+            <input type="file" accept="application/pdf,.pdf" id="pdf-prop-file" onchange="onPdfSelected('prop')">
           </label>
-          <div class="upload-prog" id="prog-prop"><div class="upload-prog-bar" id="prog-prop-bar"></div></div>
-          <div id="pdf-prop-status" style="font-size:.72rem;color:rgba(255,255,255,.4);margin-top:.4rem"></div>
         </div>
-        <div id="pdf-prop-current" style="display:none;margin-bottom:.8rem">
-          <div style="font-size:.6rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--orange);margin-bottom:.3rem">Archivo actual</div>
-          <div id="pdf-prop-curr-name" style="font-size:.82rem;color:rgba(255,255,255,.7)"></div>
+        <div class="upload-prog" id="prog-prop"><div class="upload-prog-bar" id="prog-prop-bar"></div></div>
+        <div id="pdf-prop-status" style="font-size:.75rem;color:rgba(255,255,255,.45);margin-top:.4rem;min-height:1.1rem"></div>
+        <div id="pdf-prop-current" style="display:none;margin:.7rem 0;padding:.7rem;background:rgba(255,107,0,.05);border:1px solid rgba(255,107,0,.15);border-radius:8px">
+          <div style="font-size:.58rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--orange);margin-bottom:.25rem">Archivo publicado</div>
+          <div id="pdf-prop-curr-name" style="font-size:.82rem;color:#fff;font-weight:600"></div>
+          <div id="pdf-prop-curr-size" style="font-size:.68rem;color:rgba(255,255,255,.38)"></div>
         </div>
-        <div style="display:flex;gap:.7rem;flex-wrap:wrap">
-          <button class="submit-btn" onclick="savePdfMeta('prop')">Guardar Cambios</button>
-          <button class="submit-btn" id="del-prop-pdf" style="background:rgba(255,80,80,.15);box-shadow:none;color:#ff9999;display:none" onclick="deletePdf('prop')">Eliminar PDF</button>
+        <div style="display:flex;gap:.7rem;flex-wrap:wrap;margin-top:.8rem">
+          <button class="submit-btn" id="btn-prop-upload" onclick="uploadPdfRTDB('prop')" disabled style="opacity:.45">Publicar en la Página</button>
+          <button class="submit-btn" id="del-prop-pdf" style="background:rgba(255,80,80,.12);box-shadow:none;color:#ff9999;border:1px solid rgba(255,80,80,.22);display:none" onclick="deletePdfRTDB('prop')">Quitar PDF</button>
         </div>
       </div>
 
       <div class="a-card">
-        <div class="a-title">Manual WSDC (PDF)</div>
+        <div class="a-title">Manual WSDC</div>
         <div class="fg">
           <label>Título visible en la página</label>
           <input type="text" id="pdf-wsdc-name" placeholder="Ej: Manual Oficial WSDC 2024">
         </div>
-        <div class="fg" style="margin-bottom:.5rem">
-          <label>Subir PDF del Manual WSDC</label>
-          <label class="upload-label">
+        <div class="fg">
+          <label>Seleccionar archivo PDF</label>
+          <label class="upload-label" id="lbl-wsdc">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-            Seleccionar archivo PDF
-            <input type="file" accept="application/pdf" id="pdf-wsdc-file" onchange="uploadPdf('wsdc')">
+            <span id="lbl-wsdc-txt">Elige un PDF desde tu dispositivo</span>
+            <input type="file" accept="application/pdf,.pdf" id="pdf-wsdc-file" onchange="onPdfSelected('wsdc')">
           </label>
-          <div class="upload-prog" id="prog-wsdc"><div class="upload-prog-bar" id="prog-wsdc-bar"></div></div>
-          <div id="pdf-wsdc-status" style="font-size:.72rem;color:rgba(255,255,255,.4);margin-top:.4rem"></div>
         </div>
-        <div id="pdf-wsdc-current" style="display:none;margin-bottom:.8rem">
-          <div style="font-size:.6rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--orange);margin-bottom:.3rem">Archivo actual</div>
-          <div id="pdf-wsdc-curr-name" style="font-size:.82rem;color:rgba(255,255,255,.7)"></div>
+        <div class="upload-prog" id="prog-wsdc"><div class="upload-prog-bar" id="prog-wsdc-bar"></div></div>
+        <div id="pdf-wsdc-status" style="font-size:.75rem;color:rgba(255,255,255,.45);margin-top:.4rem;min-height:1.1rem"></div>
+        <div id="pdf-wsdc-current" style="display:none;margin:.7rem 0;padding:.7rem;background:rgba(255,107,0,.05);border:1px solid rgba(255,107,0,.15);border-radius:8px">
+          <div style="font-size:.58rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--orange);margin-bottom:.25rem">Archivo publicado</div>
+          <div id="pdf-wsdc-curr-name" style="font-size:.82rem;color:#fff;font-weight:600"></div>
+          <div id="pdf-wsdc-curr-size" style="font-size:.68rem;color:rgba(255,255,255,.38)"></div>
         </div>
-        <div style="display:flex;gap:.7rem;flex-wrap:wrap">
-          <button class="submit-btn" onclick="savePdfMeta('wsdc')">Guardar Cambios</button>
-          <button class="submit-btn" id="del-wsdc-pdf" style="background:rgba(255,80,80,.15);box-shadow:none;color:#ff9999;display:none" onclick="deletePdf('wsdc')">Eliminar PDF</button>
+        <div style="display:flex;gap:.7rem;flex-wrap:wrap;margin-top:.8rem">
+          <button class="submit-btn" id="btn-wsdc-upload" onclick="uploadPdfRTDB('wsdc')" disabled style="opacity:.45">Publicar en la Página</button>
+          <button class="submit-btn" id="del-wsdc-pdf" style="background:rgba(255,80,80,.12);box-shadow:none;color:#ff9999;border:1px solid rgba(255,80,80,.22);display:none" onclick="deletePdfRTDB('wsdc')">Quitar PDF</button>
         </div>
       </div>
+
     </div>
   </div>
 </div>
@@ -831,7 +992,8 @@ const firebaseConfig = {
   storageBucket: "doris-cnd.firebasestorage.app",
   messagingSenderId: "399056401562",
   appId: "1:399056401562:web:3b5d490d60a8a69f271b23",
-  measurementId: "G-EHDJDKX4VR"
+  measurementId: "G-EHDJDKX4VR",
+  databaseURL: "https://doris-cnd-default-rtdb.firebaseio.com"
 };
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
@@ -1302,176 +1464,350 @@ async function delTlNode(docId){
 
 /* ══════════════════════════════════════════════
    SETTINGS — Firestore doc: "settings/main"
-   Covers: bio, mission, vision, mantra, pdf meta
+   All text, bio, mantra, PDF metadata
 ══════════════════════════════════════════════ */
-const storage = firebase.storage();
+// Apply settings to the public page
+function applySettings(d){
+  if(!d) return;
+  const setText = (id, val) => { const el=document.getElementById(id); if(el && val) el.textContent=val; };
+  setText('bio-t1',      d.bio1);
+  setText('bio-t2',      d.bio2);
+  setText('txt-mision',  d.mision);
+  setText('txt-vision',  d.vision);
+  setText('txt-mantra-t',d.mantraT);
+  setText('txt-mantra-s',d.mantraS);
+  setText('pub-prop-label', d.propLabel);
+  // Moción central
+  setText('mocion-blank', d.mocionBlank);
+  setText('mocion-key',   d.mocionKey);
+  setText('mocion-sub',   d.mocionSub);
+  // PDFs come from Realtime Database — loaded separately by loadPdfFromRTDB()
+}
 
+// Populate admin form fields
+function applySettingsToForms(d){
+  if(!d) return;
+  const setVal = (id, val) => { const el=document.getElementById(id); if(el) el.value=(val||''); };
+  setVal('bio1',               d.bio1);
+  setVal('bio2',               d.bio2);
+  setVal('txt-mision-inp',     d.mision);
+  setVal('txt-vision-inp',     d.vision);
+  setVal('txt-mantra-t-inp',   d.mantraT);
+  setVal('txt-mantra-s-inp',   d.mantraS);
+  setVal('txt-prop-label-inp', d.propLabel);
+  setVal('mocion-blank-inp',   d.mocionBlank);
+  setVal('mocion-key-inp',     d.mocionKey);
+  setVal('mocion-sub-inp',     d.mocionSub);
+  setVal('pdf-prop-name',      d.pdfPropName);
+  setVal('pdf-wsdc-name',      d.pdfWsdcName);
+  ['prop','wsdc'].forEach(key=>{
+    const name  = d['pdf'+cap(key)+'Name'];
+    const curr  = document.getElementById('pdf-'+key+'-current');
+    const cname = document.getElementById('pdf-'+key+'-curr-name');
+    const delbtn= document.getElementById('del-'+key+'-pdf');
+    if(d['pdf'+cap(key)+'HasRTDB']){ if(curr) curr.style.display=''; if(cname) cname.textContent=name||''; const szEl=document.getElementById('pdf-'+key+'-curr-size'); if(szEl&&d['pdf'+cap(key)+'Size']) szEl.textContent=Math.round(d['pdf'+cap(key)+'Size']/1024)+'KB'; if(delbtn) delbtn.style.display=''; }
+    else   { if(curr) curr.style.display='none'; if(delbtn) delbtn.style.display='none'; }
+  });
+}
+
+// Live listener — updates every visitor's page in real time
 db.collection('settings').doc('main').onSnapshot(snap=>{
   if(!snap.exists) return;
   const d = snap.data();
   settingsCache = d;
-  // Bio
-  if(d.bio1) document.getElementById('bio-t1').textContent = d.bio1;
-  if(d.bio2) document.getElementById('bio-t2').textContent = d.bio2;
-  // Mission & Vision
-  if(d.mision) document.getElementById('txt-mision').textContent = d.mision;
-  if(d.vision) document.getElementById('txt-vision').textContent = d.vision;
-  // Mantra
-  if(d.mantraT) document.getElementById('txt-mantra-t').textContent = d.mantraT;
-  if(d.mantraS) document.getElementById('txt-mantra-s').textContent = d.mantraS;
-  // PDFs
-  updatePdfCard('prop', d.pdfPropUrl, d.pdfPropName);
-  updatePdfCard('wsdc', d.pdfWsdcUrl, d.pdfWsdcName);
+  applySettings(d);
+  if(loggedIn && document.getElementById('admin-section').style.display==='block'){
+    applySettingsToForms(d);
+  }
 });
 
-function loadInfoForm(){
-  const d = settingsCache;
-  if(d.bio1)    document.getElementById('bio1').value = d.bio1;
-  if(d.bio2)    document.getElementById('bio2').value = d.bio2;
-  if(d.mision)  document.getElementById('txt-mision-inp').value = d.mision;
-  if(d.vision)  document.getElementById('txt-vision-inp').value = d.vision;
-  if(d.mantraT) document.getElementById('txt-mantra-t-inp').value = d.mantraT;
-  if(d.mantraS) document.getElementById('txt-mantra-s-inp').value = d.mantraS;
-  if(d.pdfPropName) document.getElementById('pdf-prop-name').value = d.pdfPropName;
-  if(d.pdfWsdcName) document.getElementById('pdf-wsdc-name').value = d.pdfWsdcName;
-  // Show admin PDF current info
-  if(d.pdfPropUrl){
-    document.getElementById('pdf-prop-current').style.display='';
-    document.getElementById('pdf-prop-curr-name').textContent = d.pdfPropName||'Archivo subido';
-    document.getElementById('del-prop-pdf').style.display='';
-  }
-  if(d.pdfWsdcUrl){
-    document.getElementById('pdf-wsdc-current').style.display='';
-    document.getElementById('pdf-wsdc-curr-name').textContent = d.pdfWsdcName||'Archivo subido';
-    document.getElementById('del-wsdc-pdf').style.display='';
-  }
+// Called when admin panel opens — always fetches fresh from Firestore
+async function loadInfoForm(){
+  try{
+    const snap = await db.collection('settings').doc('main').get();
+    const d = snap.exists ? snap.data() : {};
+    settingsCache = d;
+    applySettingsToForms(d);
+  } catch(e){ console.warn('loadInfoForm error:', e); }
 }
 
 async function saveTextos(){
+  const get = id => { const el=document.getElementById(id); return el ? el.value.trim() : ''; };
   const data = {
-    bio1:    document.getElementById('bio1').value.trim(),
-    bio2:    document.getElementById('bio2').value.trim(),
-    mision:  document.getElementById('txt-mision-inp').value.trim(),
-    vision:  document.getElementById('txt-vision-inp').value.trim(),
-    mantraT: document.getElementById('txt-mantra-t-inp').value.trim(),
-    mantraS: document.getElementById('txt-mantra-s-inp').value.trim(),
+    bio1:        get('bio1'),
+    bio2:        get('bio2'),
+    mision:      get('txt-mision-inp'),
+    vision:      get('txt-vision-inp'),
+    mantraT:     get('txt-mantra-t-inp'),
+    mantraS:     get('txt-mantra-s-inp'),
+    propLabel:   get('txt-prop-label-inp'),
+    mocionBlank: get('mocion-blank-inp'),
+    mocionKey:   get('mocion-key-inp'),
+    mocionSub:   get('mocion-sub-inp'),
   };
-  // Remove empty keys so we don't overwrite with blank
-  Object.keys(data).forEach(k=>{ if(!data[k]) delete data[k]; });
+  const clean = {};
+  Object.keys(data).forEach(k=>{ if(data[k]) clean[k]=data[k]; });
+  if(!Object.keys(clean).length){ toast('No hay cambios para guardar'); return; }
   try{
-    await db.collection('settings').doc('main').set(data,{merge:true});
-    toast('Textos guardados ✓ — visibles en toda la página');
-  }catch(e){toast('Error: '+e.message);}
+    await db.collection('settings').doc('main').set(clean, {merge:true});
+    toast('\u2713 Cambios guardados \u2014 visibles para todos al instante');
+  } catch(e){ toast('Error al guardar: ' + e.message); }
 }
 
-// Keep backward compat
 async function saveInfo(){ await saveTextos(); }
 
-/* PDF UPLOAD */
-function uploadPdf(key){
-  const file = document.getElementById(`pdf-${key}-file`).files[0];
-  if(!file){ toast('Selecciona un PDF primero'); return; }
-  if(file.type !== 'application/pdf'){ toast('Solo se aceptan archivos PDF'); return; }
+/* ── PDF — REALTIME DATABASE (base64, gratis) ─────── */
+// rtdb initialized after firebase.initializeApp
+let rtdb;
+try { rtdb = firebase.database(); } catch(e){ console.warn('RTDB no disponible:', e); }
 
-  const prog     = document.getElementById(`prog-${key}`);
-  const progBar  = document.getElementById(`prog-${key}-bar`);
-  const status   = document.getElementById(`pdf-${key}-status`);
-  prog.style.display = '';
-  status.textContent = 'Subiendo...';
+// Selected file cache
+const pdfFileCache = {};
 
-  const ref = storage.ref(`pdfs/${key}/${file.name}`);
-  const task = ref.put(file);
+function onPdfSelected(key){
+  const input = document.getElementById('pdf-'+key+'-file');
+  const file  = input ? input.files[0] : null;
+  if(!file) return;
+  const isPdf = file.type==='application/pdf'||file.name.toLowerCase().endsWith('.pdf');
+  if(!isPdf){ toast('Solo PDF'); input.value=''; return; }
+  const maxMB = 15;
+  if(file.size > maxMB*1024*1024){
+    toast('El PDF pesa más de '+maxMB+'MB. Comprime el archivo primero.');
+    input.value=''; return;
+  }
+  pdfFileCache[key] = file;
+  const lblTxt = document.getElementById('lbl-'+key+'-txt');
+  if(lblTxt) lblTxt.textContent = '\u2713 '+file.name+' ('+Math.round(file.size/1024)+'KB)';
+  const btn = document.getElementById('btn-'+key+'-upload');
+  if(btn){ btn.disabled=false; btn.style.opacity='1'; }
+  const status = document.getElementById('pdf-'+key+'-status');
+  if(status) status.textContent = 'Listo para publicar — presiona el botón';
+}
 
-  task.on('state_changed',
-    snap => {
-      const pct = Math.round(snap.bytesTransferred / snap.totalBytes * 100);
-      progBar.style.width = pct + '%';
-      status.textContent = `Subiendo... ${pct}%`;
-    },
-    err => {
-      prog.style.display = 'none';
-      status.textContent = 'Error al subir: ' + err.message;
-      toast('Error al subir PDF');
-    },
-    async () => {
-      const url = await task.snapshot.ref.getDownloadURL();
-      const nameInput = document.getElementById(`pdf-${key}-name`).value.trim() || file.name;
-      const saveData = {};
-      saveData[`pdf${cap(key)}Url`]  = url;
-      saveData[`pdf${cap(key)}Name`] = nameInput;
-      saveData[`pdf${cap(key)}File`] = file.name;
-      await db.collection('settings').doc('main').set(saveData, {merge:true});
-      prog.style.display = 'none';
-      progBar.style.width = '0%';
-      status.textContent = '✓ PDF subido correctamente';
-      document.getElementById(`pdf-${key}-current`).style.display = '';
-      document.getElementById(`pdf-${key}-curr-name`).textContent = nameInput;
-      document.getElementById(`del-${key}-pdf`).style.display = '';
-      toast(`PDF ${nameInput} subido ✓`);
+function uploadPdfRTDB(key){
+  if(!rtdb){ toast('Realtime Database no disponible. Revisa Firebase Console.'); return; }
+  const file = pdfFileCache[key];
+  if(!file){ toast('Selecciona un archivo PDF primero'); return; }
+  const nameEl = document.getElementById('pdf-'+key+'-name');
+  const docName = (nameEl && nameEl.value.trim()) || file.name;
+  const status  = document.getElementById('pdf-'+key+'-status');
+  const prog    = document.getElementById('prog-'+key);
+  const progBar = document.getElementById('prog-'+key+'-bar');
+  const btn     = document.getElementById('btn-'+key+'-upload');
+
+  if(prog) prog.style.display='';
+  if(progBar) progBar.style.width='5%';
+  if(status) status.textContent = 'Leyendo archivo...';
+  if(btn){ btn.disabled=true; btn.style.opacity='.5'; }
+
+  const reader = new FileReader();
+  reader.onerror = ()=>{ if(status) status.textContent='Error leyendo archivo'; if(prog) prog.style.display='none'; if(btn){btn.disabled=false;btn.style.opacity='1';} };
+  reader.onprogress = e=>{ if(e.lengthComputable && progBar) progBar.style.width=(10+Math.round(e.loaded/e.total*40))+'%'; };
+  reader.onload = async (e)=>{
+    try{
+      if(status) status.textContent='Subiendo a Realtime Database...';
+      if(progBar) progBar.style.width='55%';
+      const base64 = e.target.result; // full data URL: "data:application/pdf;base64,..."
+      // Save to Realtime Database
+      await rtdb.ref('pdfs/'+key).set({
+        data: base64,
+        name: docName,
+        size: file.size,
+        updated: Date.now()
+      });
+      if(progBar) progBar.style.width='85%';
+      // Save metadata to Firestore settings
+      const meta = {};
+      meta['pdf'+cap(key)+'Name'] = docName;
+      meta['pdf'+cap(key)+'Size'] = file.size;
+      meta['pdf'+cap(key)+'HasRTDB'] = true;
+      await db.collection('settings').doc('main').set(meta,{merge:true});
+      if(progBar) progBar.style.width='100%';
+      setTimeout(()=>{ if(prog) prog.style.display='none'; if(progBar) progBar.style.width='0%'; },600);
+      if(status) status.textContent='\u2713 PDF publicado — visible en todos los dispositivos';
+      // Update admin card
+      const curr  = document.getElementById('pdf-'+key+'-current');
+      const cname = document.getElementById('pdf-'+key+'-curr-name');
+      const csize = document.getElementById('pdf-'+key+'-curr-size');
+      const delbtn= document.getElementById('del-'+key+'-pdf');
+      if(curr)  curr.style.display='';
+      if(cname) cname.textContent=docName;
+      if(csize) csize.textContent=Math.round(file.size/1024)+'KB';
+      if(delbtn)delbtn.style.display='';
+      // Update public card without reload
+      loadPdfFromRTDB(key);
+      delete pdfFileCache[key];
+      const input=document.getElementById('pdf-'+key+'-file'); if(input) input.value='';
+      const lblTxt=document.getElementById('lbl-'+key+'-txt'); if(lblTxt) lblTxt.textContent='Elige un PDF desde tu dispositivo';
+      if(btn){btn.disabled=true;btn.style.opacity='.45';}
+      toast('\u2713 '+docName+' publicado para todos');
+    } catch(err){
+      if(prog) prog.style.display='none';
+      if(status) status.textContent='\u2715 Error: '+err.message;
+      if(btn){btn.disabled=false;btn.style.opacity='1';}
+      const codes={'PERMISSION_DENIED':'Sin permisos. Verifica las Realtime Database Rules.'};
+      toast(codes[err.code]||('Error: '+err.message));
     }
-  );
+  };
+  reader.readAsDataURL(file);
 }
 
-async function savePdfMeta(key){
-  const name = document.getElementById(`pdf-${key}-name`).value.trim();
-  if(!name){ toast('Escribe un título para el documento'); return; }
-  const data = {};
-  data[`pdf${cap(key)}Name`] = name;
-  await db.collection('settings').doc('main').set(data,{merge:true});
-  toast('Título actualizado ✓');
+async function deletePdfRTDB(key){
+  if(!confirm('\u00bfEliminar este PDF? Desaparecerá para todos.')) return;
+  try{
+    if(rtdb) await rtdb.ref('pdfs/'+key).remove();
+    const meta={};
+    meta['pdf'+cap(key)+'Name']    = firebase.firestore.FieldValue.delete();
+    meta['pdf'+cap(key)+'Size']    = firebase.firestore.FieldValue.delete();
+    meta['pdf'+cap(key)+'HasRTDB'] = firebase.firestore.FieldValue.delete();
+    await db.collection('settings').doc('main').update(meta);
+    const curr  = document.getElementById('pdf-'+key+'-current');
+    const delbtn= document.getElementById('del-'+key+'-pdf');
+    const status= document.getElementById('pdf-'+key+'-status');
+    if(curr)   curr.style.display='none';
+    if(delbtn) delbtn.style.display='none';
+    if(status) status.textContent='';
+    updatePdfCard(key, null, null);
+    toast('PDF eliminado');
+  } catch(e){ toast('Error: '+e.message); }
 }
+
+// PUBLIC: load PDF base64 from RTDB and render
+function loadPdfFromRTDB(key){
+  if(!rtdb) return;
+  rtdb.ref('pdfs/'+key).once('value').then(snap=>{
+    if(!snap.exists()){ updatePdfCard(key, null, null); return; }
+    const d    = snap.val();
+    const name = d.name || (key==='prop'?'Propuestas V CND':'Manual WSDC');
+    const size = d.size ? ' · '+Math.round(d.size/1024)+'KB' : '';
+    // Store base64 in memory for modal
+    window['_pdfB64_'+key] = d.data;
+    updatePdfCardRTDB(key, name, size);
+  }).catch(()=>{ updatePdfCard(key, null, null); });
+}
+
+function updatePdfCardRTDB(key, name, sizeStr){
+  const titleEl   = document.getElementById('pdf-'+key+'-title');
+  const metaEl    = document.getElementById('pdf-'+key+'-meta');
+  const actionsEl = document.getElementById('pdf-'+key+'-actions');
+  if(!titleEl) return;
+  titleEl.textContent = name;
+  metaEl.textContent  = 'Disponible'+sizeStr+' \u00b7 Haz clic para ver';
+  actionsEl.innerHTML =
+    '<button class="doc-btn view" onclick="openPdfRTDB(\''+key+'\',' +
+    '\''+name.replace(/'/g,"\\'")+'\')">' +
+    'Ver PDF</button>' +
+    '<button class="doc-btn dl" onclick="downloadPdfRTDB(\''+key+'\')">Descargar</button>';
+}
+
+function openPdfRTDB(key, title){
+  const b64 = window['_pdfB64_'+key];
+  if(!b64){ toast('PDF no cargado aún, intenta de nuevo'); return; }
+  // Convert data URL to blob URL for iframe
+  const byteStr  = atob(b64.split(',')[1]);
+  const ab       = new ArrayBuffer(byteStr.length);
+  const ia       = new Uint8Array(ab);
+  for(let i=0;i<byteStr.length;i++) ia[i]=byteStr.charCodeAt(i);
+  const blob     = new Blob([ab],{type:'application/pdf'});
+  const blobUrl  = URL.createObjectURL(blob);
+  document.getElementById('pdf-modal-title').textContent = title;
+  document.getElementById('pdf-modal-frame').src = blobUrl;
+  document.getElementById('pdf-modal-dl').href   = blobUrl;
+  document.getElementById('pdf-modal-dl').download = title+'.pdf';
+  document.getElementById('pdf-modal').style.display = '';
+  document.body.style.overflow = 'hidden';
+}
+
+function downloadPdfRTDB(key){
+  const b64  = window['_pdfB64_'+key];
+  const name = document.getElementById('pdf-'+key+'-title').textContent || key+'.pdf';
+  if(!b64){ toast('PDF no cargado aún'); return; }
+  const byteStr = atob(b64.split(',')[1]);
+  const ab      = new ArrayBuffer(byteStr.length);
+  const ia      = new Uint8Array(ab);
+  for(let i=0;i<byteStr.length;i++) ia[i]=byteStr.charCodeAt(i);
+  const blob = new Blob([ab],{type:'application/pdf'});
+  const a    = document.createElement('a');
+  a.href     = URL.createObjectURL(blob);
+  a.download = name+'.pdf';
+  a.click();
+}
+
+// Keep deletePdf alias for backward compat
+async function deletePdf(key){ await deletePdfRTDB(key); }
+
+// legacy stub — no longer used but keep to avoid reference errors
+async function savePdfUrl(key){}
 
 async function deletePdf(key){
-  if(!confirm('¿Eliminar este PDF? Se quitará de la página pública.')) return;
-  const data = {};
-  data[`pdf${cap(key)}Url`]  = firebase.firestore.FieldValue.delete();
-  data[`pdf${cap(key)}Name`] = firebase.firestore.FieldValue.delete();
-  data[`pdf${cap(key)}File`] = firebase.firestore.FieldValue.delete();
-  await db.collection('settings').doc('main').update(data);
-  document.getElementById(`pdf-${key}-current`).style.display = 'none';
-  document.getElementById(`del-${key}-pdf`).style.display = 'none';
-  toast('PDF eliminado');
+  if(!confirm('\u00bfEliminar este PDF? Desaparece de la p\u00e1gina para todos.')) return;
+  try{
+    const data = {};
+    data['pdf'+cap(key)+'Url']  = firebase.firestore.FieldValue.delete();
+    data['pdf'+cap(key)+'Name'] = firebase.firestore.FieldValue.delete();
+    data['pdf'+cap(key)+'File'] = firebase.firestore.FieldValue.delete();
+    await db.collection('settings').doc('main').update(data);
+    const curr  = document.getElementById('pdf-'+key+'-current');
+    const delbtn= document.getElementById('del-'+key+'-pdf');
+    const status= document.getElementById('pdf-'+key+'-status');
+    if(curr)   curr.style.display='none';
+    if(delbtn) delbtn.style.display='none';
+    if(status) status.textContent='';
+    toast('PDF eliminado');
+  } catch(e){ toast('Error: '+e.message); }
 }
 
-function cap(s){ return s.charAt(0).toUpperCase() + s.slice(1); }
+function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
 
-/* PUBLIC PDF CARD UPDATE */
+/* PUBLIC PDF CARD */
 function updatePdfCard(key, url, name){
-  const titleEl   = document.getElementById(`pdf-${key}-title`);
-  const metaEl    = document.getElementById(`pdf-${key}-meta`);
-  const actionsEl = document.getElementById(`pdf-${key}-actions`);
+  const titleEl   = document.getElementById('pdf-'+key+'-title');
+  const metaEl    = document.getElementById('pdf-'+key+'-meta');
+  const actionsEl = document.getElementById('pdf-'+key+'-actions');
   if(!titleEl) return;
   if(url){
     if(name) titleEl.textContent = name;
-    metaEl.textContent = 'Disponible · Haz clic para ver';
-    actionsEl.innerHTML = `
-      <button class="doc-btn view" onclick="openPdfModal('${url}','${(name||'Documento').replace(/'/g,"\\'")}')">Ver PDF</button>
-      <a class="doc-btn dl" href="${url}" target="_blank" download>Descargar</a>`;
+    metaEl.textContent = 'Disponible \u00b7 Haz clic para ver';
+    const safeTitle = (name||'Documento').replace(/\\/g,'').replace(/'/g,"\\'");
+    const safeUrl   = url.replace(/'/g,"\\'");
+    actionsEl.innerHTML =
+      '<button class="doc-btn view" onclick="openPdfModal(\''+safeUrl+'\',\''+safeTitle+'\')">Ver PDF</button>'+
+      '<a class="doc-btn dl" href="'+url+'" target="_blank" rel="noopener noreferrer">Descargar</a>';
   } else {
-    metaEl.textContent = 'No disponible aún';
-    actionsEl.innerHTML = '<span style="color:rgba(255,255,255,.25);font-size:.72rem">Próximamente</span>';
+    titleEl.textContent = key==='prop' ? 'Propuestas V CND' : 'Manual WSDC';
+    metaEl.textContent  = 'No disponible a\u00fan';
+    actionsEl.innerHTML = '<span style="color:rgba(255,255,255,.25);font-size:.72rem">Pr\u00f3ximamente</span>';
   }
 }
 
 /* PDF MODAL */
 function openPdfModal(url, title){
   document.getElementById('pdf-modal-title').textContent = title;
-  document.getElementById('pdf-modal-frame').src = url;
-  document.getElementById('pdf-modal-dl').href = url;
+  // Google Docs viewer as universal fallback
+  const viewer = 'https://docs.google.com/gview?embedded=true&url='+encodeURIComponent(url);
+  document.getElementById('pdf-modal-frame').src = viewer;
+  document.getElementById('pdf-modal-dl').href   = url;
   document.getElementById('pdf-modal').style.display = '';
   document.body.style.overflow = 'hidden';
 }
 function closePdfModal(){
   document.getElementById('pdf-modal').style.display = 'none';
-  document.getElementById('pdf-modal-frame').src = '';
+  document.getElementById('pdf-modal-frame').src      = '';
   document.body.style.overflow = '';
 }
 
+/* ── LOAD PDFs FROM RTDB ON PAGE START ─────────── */
+document.addEventListener('DOMContentLoaded',()=>{
+  loadPdfFromRTDB('prop');
+  loadPdfFromRTDB('wsdc');
+});
+
 /* ── TOAST ─────────────────────────────────────── */
 function toast(msg){
-  const t=document.getElementById('toast');
-  t.textContent=msg;t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),2700);
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 3200);
 }
 </script>
 </body>
