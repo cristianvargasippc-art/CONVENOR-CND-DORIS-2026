@@ -8,7 +8,7 @@
 <meta http-equiv="X-Frame-Options" content="DENY">
 <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
 <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=()">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: blob: 'unsafe-inline' 'unsafe-eval'; frame-src blob: https://firebasestorage.googleapis.com https://*.firebaseapp.com;">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: blob: 'unsafe-inline' 'unsafe-eval'; frame-src blob: https://drive.google.com https://docs.google.com https://firebasestorage.googleapis.com https://*.firebaseapp.com;">
 <title>V CND – DORIS MORA | CONVENOR</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700;1,300&display=swap" rel="stylesheet">
 <!-- Firebase compat SDKs -->
@@ -1718,15 +1718,16 @@ let rtdb = null; // RTDB no longer needed
 // Convert any Google Drive link to an embeddable preview URL
 function driveToEmbed(url){
   if(!url) return '';
-  // Already embed/preview format
-  if(url.includes('/preview') || url.includes('embedded=true')) return url;
-  // Standard share link: /file/d/ID/view  or  /file/d/ID/edit
+  // Extract file ID from any Drive URL format
+  // Handles: /file/d/ID/view, /file/d/ID/view?usp=sharing, /file/d/ID/edit, /file/d/ID/preview
   const m = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
   if(m) return 'https://drive.google.com/file/d/'+m[1]+'/preview';
-  // docs.google.com/document or spreadsheet — use export
-  const m2 = url.match(/id=([a-zA-Z0-9_-]+)/);
+  // Fallback: id= param
+  const m2 = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
   if(m2) return 'https://drive.google.com/file/d/'+m2[1]+'/preview';
-  return url; // fallback: use as-is
+  // Already embed
+  if(url.includes('embedded=true')) return url;
+  return url;
 }
 
 function driveToDownload(url){
