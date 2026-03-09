@@ -15,8 +15,6 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <style>
 :root{
   --orange:#FF6B00;--orange-deep:#D44E00;
@@ -119,8 +117,25 @@ section{position:relative;z-index:1;}
 .ph-badge{position:absolute;bottom:-14px;left:50%;transform:translateX(-50%);background:linear-gradient(90deg,var(--orange),var(--orange-deep));color:#fff;font-family:var(--font);font-size:clamp(.58rem,1.1vw,.7rem);font-weight:700;letter-spacing:3px;text-transform:uppercase;padding:.52rem 1.8rem;border-radius:30px;white-space:nowrap;box-shadow:0 8px 28px rgba(255,107,0,.42);}
 .doris-bio{text-align:left;}
 .doris-bio .s-label{text-align:left;}
-.doris-bio h2{font-family:var(--font);font-size:clamp(2.4rem,5.5vw,5rem);font-weight:900;line-height:.88;letter-spacing:-.02em;margin-bottom:clamp(.9rem,2vh,1.4rem);}
-.doris-bio h2 .l2{color:var(--orange);display:block;}
+.doris-bio h2{text-align:left;}
+/* ── Name stacked ── */
+.doris-bio h2{
+  font-family:var(--font);
+  font-size:clamp(2.2rem,4.5vw,4.5rem);
+  font-weight:900;
+  line-height:.95;
+  letter-spacing:-.02em;
+  margin-bottom:clamp(.9rem,2vh,1.4rem);
+}
+.doris-bio h2 .name-line{
+  display:block;
+  white-space:nowrap;
+}
+.doris-bio h2 .l2{
+  color:var(--orange);
+  display:block;
+  white-space:nowrap;
+}
 .doris-bio .s-rule{margin:0 0 1.6rem;}
 .bio-q{font-style:italic;font-weight:300;font-size:clamp(.95rem,1.8vw,1.15rem);line-height:1.65;color:rgba(255,255,255,.6);border-left:3px solid var(--orange);padding-left:1.1rem;margin-bottom:1.4rem;}
 .bio-t{font-size:clamp(.84rem,1.4vw,.92rem);line-height:1.85;color:rgba(255,255,255,.7);margin-bottom:1.6rem;}
@@ -136,13 +151,25 @@ section{position:relative;z-index:1;}
 .tl-title span{color:var(--orange);}
 .tl-sub{font-size:clamp(.7rem,1.3vw,.82rem);letter-spacing:2px;color:rgba(255,255,255,.35);text-transform:uppercase;}
 .tl-track{position:relative;max-width:900px;margin:0 auto;padding-bottom:2rem;}
-.tl-line{
-  position:absolute;left:50%;transform:translateX(-50%);
-  width:2px;pointer-events:none;z-index:0;
-  background:linear-gradient(to bottom,rgba(255,107,0,.05) 0%,rgba(255,107,0,.4) 10%,rgba(255,107,0,.4) 90%,rgba(255,107,0,.05) 100%);
-}
+.tl-line{ display:none; }
 @media(max-width:700px){.tl-line{left:21px;transform:none;}}
-.tl-node{display:flex;align-items:flex-start;gap:0;margin-bottom:clamp(2rem,4vh,3rem);position:relative;}
+.tl-node{
+  display:flex;align-items:flex-start;gap:0;
+  margin-bottom:clamp(2rem,4vh,3rem);position:relative;
+  opacity:0;
+  transform:translateY(30px) translateX(-20px);
+  transition:opacity .6s ease, transform .6s ease;
+}
+.tl-node.tl-right{
+  transform:translateY(30px) translateX(20px);
+}
+.tl-node.tl-final{
+  transform:translateY(40px);
+}
+.tl-node.tl-vis{
+  opacity:1 !important;
+  transform:translateY(0) translateX(0) !important;
+}
 .tl-node .tl-card{width:calc(50% - 36px);}
 .tl-node::after{content:'';width:calc(50% - 36px);}
 .tl-dot{flex-shrink:0;width:52px;height:52px;margin:0 10px;border-radius:50%;background:linear-gradient(135deg,var(--orange),var(--orange-deep));border:3px solid rgba(255,107,0,.25);box-shadow:0 0 0 6px rgba(255,107,0,.08),0 4px 20px rgba(255,107,0,.3);display:flex;align-items:center;justify-content:center;position:relative;z-index:2;transition:box-shadow .3s,transform .3s;}
@@ -158,19 +185,60 @@ section{position:relative;z-index:1;}
 .tl-dot-final{width:68px!important;height:68px!important;background:linear-gradient(135deg,#FF8800,var(--orange),var(--orange-deep))!important;box-shadow:0 0 0 10px rgba(255,107,0,.12),0 8px 40px rgba(255,107,0,.55)!important;border:3px solid rgba(255,200,100,.4)!important;}
 .tl-dot-final svg{width:28px;height:28px;stroke:#fff;fill:rgba(255,255,255,.15);}
 /* Card */
-.tl-card{background:rgba(255,107,0,.06);border:1px solid rgba(255,107,0,.2);border-radius:16px;padding:clamp(1rem,2.5vw,1.5rem);transition:border-color .3s,background .3s,transform .3s;position:relative;overflow:hidden;}
-.tl-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--orange),transparent);opacity:0;transition:opacity .3s;}
-.tl-node:hover .tl-card{background:rgba(255,107,0,.1);border-color:rgba(255,107,0,.4);transform:translateY(-3px);}
+.tl-card{
+  background:linear-gradient(135deg,rgba(255,107,0,.07) 0%,rgba(30,8,0,.6) 100%);
+  border:1px solid rgba(255,107,0,.18);
+  border-radius:20px;
+  padding:clamp(1.1rem,2.5vw,1.6rem) clamp(1.1rem,2.5vw,1.5rem);
+  transition:border-color .3s,background .3s,transform .3s,box-shadow .3s;
+  position:relative;overflow:hidden;
+  box-shadow:0 4px 20px rgba(0,0,0,.35);
+}
+.tl-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--orange),transparent);
+  opacity:0;transition:opacity .3s;
+}
+.tl-card::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,107,0,.15),transparent);
+}
+.tl-node:hover .tl-card{
+  background:linear-gradient(135deg,rgba(255,107,0,.13) 0%,rgba(50,12,0,.7) 100%);
+  border-color:rgba(255,107,0,.45);
+  transform:translateY(-4px);
+  box-shadow:0 16px 48px rgba(255,107,0,.15);
+}
 .tl-node:hover .tl-card::before{opacity:1;}
-.tl-card-final{background:rgba(255,107,0,.1)!important;border-color:rgba(255,107,0,.45)!important;text-align:center;box-shadow:0 16px 60px rgba(255,107,0,.18);}
+.tl-card-final{
+  background:linear-gradient(135deg,rgba(255,107,0,.14) 0%,rgba(80,20,0,.5) 100%)!important;
+  border-color:rgba(255,107,0,.5)!important;
+  text-align:center;
+  box-shadow:0 20px 70px rgba(255,107,0,.22)!important;
+}
 .tl-card-final::before{opacity:1!important;}
-.tl-year{font-size:clamp(.58rem,.95vw,.65rem);font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--orange);margin-bottom:.3rem;}
-.tl-role{font-family:var(--font);font-size:clamp(.9rem,1.8vw,1.05rem);font-weight:700;color:#fff;margin-bottom:.55rem;line-height:1.3;}
-.tl-desc{font-size:clamp(.78rem,1.3vw,.85rem);line-height:1.72;color:rgba(255,255,255,.65);margin-bottom:.8rem;}
+.tl-year{
+  font-size:clamp(.55rem,.9vw,.62rem);font-weight:700;letter-spacing:3.5px;
+  text-transform:uppercase;color:var(--orange);margin-bottom:.35rem;
+  opacity:.9;
+}
+.tl-role{
+  font-family:var(--font);font-size:clamp(.92rem,1.8vw,1.08rem);
+  font-weight:700;color:#fff;margin-bottom:.5rem;line-height:1.25;
+}
+.tl-desc{
+  font-size:clamp(.78rem,1.3vw,.84rem);line-height:1.78;
+  color:rgba(255,255,255,.58);margin-bottom:.8rem;
+}
 .tl-tags-row{display:flex;flex-wrap:wrap;gap:.35rem;}
-.tl-tag{font-size:.58rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:.22rem .65rem;border-radius:12px;background:rgba(255,107,0,.1);border:1px solid rgba(255,107,0,.22);color:rgba(255,255,255,.65);}
-.tl-tag-gold{background:rgba(255,160,0,.15)!important;border-color:rgba(255,160,0,.4)!important;color:#ffc94d!important;}
-.tl-tag-int{background:rgba(99,102,241,.12)!important;border-color:rgba(99,102,241,.35)!important;color:#a5b4fc!important;}
+.tl-tag{
+  font-size:.56rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
+  padding:.24rem .7rem;border-radius:20px;
+  background:rgba(255,107,0,.08);border:1px solid rgba(255,107,0,.2);
+  color:rgba(255,255,255,.6);
+}
+.tl-tag-gold{background:rgba(255,160,0,.12)!important;border-color:rgba(255,160,0,.38)!important;color:#ffc94d!important;}
+.tl-tag-int{background:rgba(99,102,241,.1)!important;border-color:rgba(99,102,241,.32)!important;color:#a5b4fc!important;}
 @media(max-width:700px){
   .tl-node,.tl-node.tl-right{flex-direction:row!important;align-items:flex-start;}
   .tl-node .tl-card,.tl-node.tl-right .tl-card{width:auto;flex:1;}
@@ -575,9 +643,9 @@ footer{background:#060100;border-top:1px solid rgba(255,107,0,.14);text-align:ce
       </div>
       <div class="doris-bio reveal" style="transition-delay:.15s">
         <p class="s-label">Conoce a la Convenor</p>
-        <h2>Doris Mabel<span class="l2">Mora Montero</span></h2>
+        <h2><span class="name-line">Doris Mabel</span><span class="l2">Mora Montero</span></h2>
         <div class="s-rule" style="margin:0 0 1.5rem"></div>
-        <p class="bio-q">"Hoy, llevo conmigo una lección invaluable: inquebrantable es una identidad, es ser comunidad y agregar valor a ese sentimiento que nos une; así como las monarcas, nuestra visión se transforma y evoluciona."</p>
+        <p class="bio-q">"Desde los Modelos de Naciones Unidas hasta el escenario nacional del debate — cada ronda, cada argumento, cada moción ha sido un paso hacia aquí."</p>
         <p class="bio-t" id="bio-t1">Egresada de UNAPEC, originaria de la regional 02 (San Juan y Elías Piña). Desde 2018, Doris incursionó en los Modelos de Naciones Unidas desarrollando habilidades en argumentación, debate, oratoria y diplomacia — semilla de una trayectoria que la llevaría a convertirse en una de las figuras más sólidas del debate competitivo dominicano.</p>
         <p class="bio-t" id="bio-t2">Ha ejercido como persona jueza en categoría Open y de Discursos en torneos nacionales e internacionales: TINDEP 2025 (Guatemala), TEN 2025, CIDELA 2026, Copa Demian (ed. Beatrice 2026), Torneo Andino de Discursos 2025, entre otros. Fue Coordinadora de Transportación en el CMUDE 2025 (sede RD) y Encargada Logística de la 1ra Copa Argumentativa PUCMM 2025.</p>
         <div class="bio-tags">
@@ -601,8 +669,7 @@ footer{background:#060100;border-top:1px solid rgba(255,107,0,.14);text-align:ce
     <div class="tl-wrap reveal" style="transition-delay:.1s">
       <div class="tl-header">
         <p class="s-label" style="margin-bottom:.4rem">Trayectoria de Debate &amp; Logística</p>
-        <h3 class="tl-title">El camino al <span>V CND</span></h3>
-        <p class="tl-sub">Cada etapa, una pieza del engranaje que la trajo hasta aquí</p>
+        <h3 class="tl-title" id="tl-main-title">El camino al <span>V CND</span></h3>
       </div>
       <div class="tl-track" id="tl-track">
         <div class="tl-line" id="tl-line"></div>
@@ -630,10 +697,9 @@ footer{background:#060100;border-top:1px solid rgba(255,107,0,.14);text-align:ce
 
       <div class="mocion-card">
         <div class="mocion-top">
-          <span class="mocion-badge">Nuestra Identidad · V CND</span>
+          <span class="mocion-badge">NUESTRA IDENTIDAD · V CND</span>
         </div>
         <div class="mocion-q">
-          <div class="mq-line1"></div>
           <div class="mq-blank-row">
             <span class="mocion-blank" id="mocion-blank">ser</span>
           </div>
@@ -710,20 +776,8 @@ footer{background:#060100;border-top:1px solid rgba(255,107,0,.14);text-align:ce
             <button onclick="closePdfModal()" style="background:rgba(0,0,0,.3);border:none;color:#fff;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:1rem;line-height:1;display:flex;align-items:center;justify-content:center">✕</button>
           </div>
         </div>
-        <!-- page nav -->
-        <div id="pdf-nav" style="display:flex;align-items:center;justify-content:center;gap:1rem;padding:.45rem;background:rgba(0,0,0,.5);flex-shrink:0;font-size:.75rem;color:rgba(255,255,255,.55)">
-          <button onclick="pdfChangePage(-1)" style="background:rgba(255,107,0,.15);border:1px solid rgba(255,107,0,.3);color:#fff;border-radius:8px;padding:.25rem .7rem;cursor:pointer;font-size:.8rem">◀</button>
-          <span>Página <span id="pdf-pg-cur">1</span> de <span id="pdf-pg-tot">?</span></span>
-          <button onclick="pdfChangePage(1)" style="background:rgba(255,107,0,.15);border:1px solid rgba(255,107,0,.3);color:#fff;border-radius:8px;padding:.25rem .7rem;cursor:pointer;font-size:.8rem">▶</button>
-        </div>
-        <!-- canvas area -->
-        <div id="pdf-canvas-wrap" style="flex:1;overflow:auto;display:flex;align-items:flex-start;justify-content:center;background:#1a0800;padding:1rem">
-          <div id="pdf-loading" style="color:rgba(255,255,255,.4);font-size:.85rem;margin:auto;display:flex;flex-direction:column;align-items:center;gap:.8rem">
-            <span class="loader"></span>
-            <span>Cargando PDF...</span>
-          </div>
-          <canvas id="pdf-canvas" style="display:none;max-width:100%;border-radius:4px;box-shadow:0 4px 20px rgba(0,0,0,.5)"></canvas>
-        </div>
+        <!-- iframe Google Drive viewer -->
+        <iframe id="pdf-modal-frame" src="" style="width:100%;flex:1;border:none;background:#111" allowfullscreen></iframe>
       </div>
     </div>
   </div>
@@ -870,8 +924,9 @@ footer{background:#060100;border-top:1px solid rgba(255,107,0,.14);text-align:ce
         <div class="two">
           <div class="fg"><label>Etiqueta superior</label><input type="text" id="txt-prop-label-inp" placeholder="La Pregunta del Torneo"></div>
         </div>
-        <div class="a-title" style="font-size:.82rem;margin-top:.5rem">Moción Central ¿Qué significa __ <span style="color:var(--orange)">X</span>?</div>
-        <div class="fg"><label>El espacio en blanco (parte editable)</label><input type="text" id="mocion-blank-inp" placeholder="Ej: ser · hacer · vivir · liderar"></div>
+        <div class="a-title" style="font-size:.82rem;margin-top:.5rem">Tarjeta de Identidad</div>
+        <div class="fg"><label>Texto del badge (badge superior)</label><input type="text" id="mocion-badge-inp" placeholder="NUESTRA IDENTIDAD · V CND"></div>
+        <div class="fg"><label>Espacio en blanco (parte gris subrayada)</label><input type="text" id="mocion-blank-inp" placeholder="Ej: ser · hacer · vivir · liderar"></div>
         <div class="fg"><label>Palabra(s) en Naranja</label><input type="text" id="mocion-key-inp" placeholder="Ej: Monarca Inquebrantable"></div>
         <div class="fg"><label>Subtexto debajo de la pregunta</label><input type="text" id="mocion-sub-inp" placeholder="Frase inspiracional..."></div>
         <button class="submit-btn" onclick="saveTextos()">Guardar Moción</button>
@@ -889,6 +944,12 @@ footer{background:#060100;border-top:1px solid rgba(255,107,0,.14);text-align:ce
         <button class="submit-btn" onclick="saveTextos()">Guardar Banner</button>
       </div>
       <div class="a-card">
+        <div class="a-title">Sección Trayectoria</div>
+        <div class="fg"><label>Etiqueta superior</label><input type="text" id="tl-label-inp" placeholder="Trayectoria de Debate & Logística"></div>
+        <div class="fg"><label>Título principal</label><input type="text" id="tl-title-inp" placeholder="El camino al &lt;span&gt;V CND&lt;/span&gt;"></div>
+        <button class="submit-btn" onclick="saveTextos()">Guardar Trayectoria</button>
+      </div>
+      <div class="a-card">
         <div class="a-title">Bio de Doris Mora</div>
         <div class="fg">
           <label>Párrafo 1</label>
@@ -902,60 +963,86 @@ footer{background:#060100;border-top:1px solid rgba(255,107,0,.14);text-align:ce
       </div>
     </div>
 
-    <!-- PDFs TAB — Realtime Database (base64, gratis) -->
+    <!-- PDFs TAB — Google Drive links -->
     <div class="a-panel" id="tab-pdfs">
 
+      <!-- instrucciones -->
+      <div class="a-card" style="border-color:rgba(255,107,0,.2)">
+        <div class="a-title">¿Cómo obtener el link de Google Drive?</div>
+        <ol style="font-size:.82rem;color:rgba(255,255,255,.55);line-height:2;padding-left:1.2rem;margin:0">
+          <li>Abre <strong style="color:#fff">drive.google.com</strong> y sube tu PDF</li>
+          <li>Clic derecho sobre el archivo → <strong style="color:#fff">Compartir</strong> → <strong style="color:#fff">Cualquier persona con el enlace</strong></li>
+          <li>Copia el enlace — tendrá este formato:<br>
+            <code style="font-size:.72rem;background:rgba(255,107,0,.08);padding:.2rem .5rem;border-radius:5px;color:rgba(255,255,255,.7)">https://drive.google.com/file/d/ID_DEL_ARCHIVO/view</code>
+          </li>
+          <li>Pégalo abajo — el sistema lo convierte automáticamente ✓</li>
+        </ol>
+      </div>
+
+      <!-- Documento 1 -->
       <div class="a-card">
-        <div class="a-title">Documento de Propuestas</div>
+        <div class="a-title">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:.4rem"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          Documento de Propuestas
+        </div>
         <div class="fg">
           <label>Título visible en la página</label>
           <input type="text" id="pdf-prop-name" placeholder="Ej: Propuestas V CND 2025">
         </div>
         <div class="fg">
-          <label>Seleccionar archivo PDF</label>
-          <label class="upload-label" id="lbl-prop">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-            <span id="lbl-prop-txt">Elige un PDF desde tu dispositivo</span>
-            <input type="file" accept="application/pdf,.pdf" id="pdf-prop-file" onchange="onPdfSelected('prop')">
-          </label>
+          <label>Link de Google Drive</label>
+          <div style="display:flex;gap:.6rem;align-items:center">
+            <input type="url" id="pdf-prop-url" placeholder="https://drive.google.com/file/d/.../view" style="flex:1">
+            <button onclick="previewDriveLink('prop')" style="background:rgba(255,107,0,.15);border:1px solid rgba(255,107,0,.3);color:var(--orange);border-radius:10px;padding:.55rem 1rem;cursor:pointer;font-size:.75rem;font-weight:700;white-space:nowrap;transition:all .2s" onmouseover="this.style.background='rgba(255,107,0,.25)'" onmouseout="this.style.background='rgba(255,107,0,.15)'">
+              👁 Previsualizar
+            </button>
+          </div>
         </div>
-        <div class="upload-prog" id="prog-prop"><div class="upload-prog-bar" id="prog-prop-bar"></div></div>
-        <div id="pdf-prop-status" style="font-size:.75rem;color:rgba(255,255,255,.45);margin-top:.4rem;min-height:1.1rem"></div>
-        <div id="pdf-prop-current" style="display:none;margin:.7rem 0;padding:.7rem;background:rgba(255,107,0,.05);border:1px solid rgba(255,107,0,.15);border-radius:8px">
-          <div style="font-size:.58rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--orange);margin-bottom:.25rem">Archivo publicado</div>
-          <div id="pdf-prop-curr-name" style="font-size:.82rem;color:#fff;font-weight:600"></div>
-          <div id="pdf-prop-curr-size" style="font-size:.68rem;color:rgba(255,255,255,.38)"></div>
+        <!-- mini preview -->
+        <div id="pdf-prop-preview" style="display:none;margin:.5rem 0;border-radius:10px;overflow:hidden;border:1px solid rgba(255,107,0,.2)">
+          <iframe id="pdf-prop-iframe" src="" style="width:100%;height:320px;border:none;background:#111" allowfullscreen></iframe>
         </div>
-        <div style="display:flex;gap:.7rem;flex-wrap:wrap;margin-top:.8rem">
-          <button class="submit-btn" id="btn-prop-upload" onclick="uploadPdfRTDB('prop')" disabled style="opacity:.45">Publicar en la Página</button>
-          <button class="submit-btn" id="del-prop-pdf" style="background:rgba(255,80,80,.12);box-shadow:none;color:#ff9999;border:1px solid rgba(255,80,80,.22);display:none" onclick="deletePdfRTDB('prop')">Quitar PDF</button>
+        <div id="pdf-prop-status" style="font-size:.75rem;color:rgba(255,255,255,.45);margin:.3rem 0;min-height:1rem"></div>
+        <div id="pdf-prop-current" style="display:none;margin:.5rem 0;padding:.65rem .9rem;background:rgba(255,107,0,.05);border:1px solid rgba(255,107,0,.15);border-radius:8px;font-size:.8rem">
+          <span style="color:var(--orange);font-weight:700;font-size:.6rem;letter-spacing:2px;text-transform:uppercase">Publicado · </span>
+          <span id="pdf-prop-curr-name" style="color:#fff"></span>
+        </div>
+        <div style="display:flex;gap:.7rem;flex-wrap:wrap;margin-top:.9rem">
+          <button class="submit-btn" onclick="saveDriveLink('prop')">Publicar en la Página</button>
+          <button class="submit-btn" id="del-prop-pdf" style="background:rgba(255,80,80,.1);box-shadow:none;color:#ff9999;border:1px solid rgba(255,80,80,.2);display:none" onclick="deleteDriveLink('prop')">Quitar Documento</button>
         </div>
       </div>
 
+      <!-- Documento 2 -->
       <div class="a-card">
-        <div class="a-title">Manual WSDC</div>
+        <div class="a-title">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:.4rem"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          Manual WSDC
+        </div>
         <div class="fg">
           <label>Título visible en la página</label>
           <input type="text" id="pdf-wsdc-name" placeholder="Ej: Manual Oficial WSDC 2024">
         </div>
         <div class="fg">
-          <label>Seleccionar archivo PDF</label>
-          <label class="upload-label" id="lbl-wsdc">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-            <span id="lbl-wsdc-txt">Elige un PDF desde tu dispositivo</span>
-            <input type="file" accept="application/pdf,.pdf" id="pdf-wsdc-file" onchange="onPdfSelected('wsdc')">
-          </label>
+          <label>Link de Google Drive</label>
+          <div style="display:flex;gap:.6rem;align-items:center">
+            <input type="url" id="pdf-wsdc-url" placeholder="https://drive.google.com/file/d/.../view" style="flex:1">
+            <button onclick="previewDriveLink('wsdc')" style="background:rgba(255,107,0,.15);border:1px solid rgba(255,107,0,.3);color:var(--orange);border-radius:10px;padding:.55rem 1rem;cursor:pointer;font-size:.75rem;font-weight:700;white-space:nowrap;transition:all .2s" onmouseover="this.style.background='rgba(255,107,0,.25)'" onmouseout="this.style.background='rgba(255,107,0,.15)'">
+              👁 Previsualizar
+            </button>
+          </div>
         </div>
-        <div class="upload-prog" id="prog-wsdc"><div class="upload-prog-bar" id="prog-wsdc-bar"></div></div>
-        <div id="pdf-wsdc-status" style="font-size:.75rem;color:rgba(255,255,255,.45);margin-top:.4rem;min-height:1.1rem"></div>
-        <div id="pdf-wsdc-current" style="display:none;margin:.7rem 0;padding:.7rem;background:rgba(255,107,0,.05);border:1px solid rgba(255,107,0,.15);border-radius:8px">
-          <div style="font-size:.58rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--orange);margin-bottom:.25rem">Archivo publicado</div>
-          <div id="pdf-wsdc-curr-name" style="font-size:.82rem;color:#fff;font-weight:600"></div>
-          <div id="pdf-wsdc-curr-size" style="font-size:.68rem;color:rgba(255,255,255,.38)"></div>
+        <div id="pdf-wsdc-preview" style="display:none;margin:.5rem 0;border-radius:10px;overflow:hidden;border:1px solid rgba(255,107,0,.2)">
+          <iframe id="pdf-wsdc-iframe" src="" style="width:100%;height:320px;border:none;background:#111" allowfullscreen></iframe>
         </div>
-        <div style="display:flex;gap:.7rem;flex-wrap:wrap;margin-top:.8rem">
-          <button class="submit-btn" id="btn-wsdc-upload" onclick="uploadPdfRTDB('wsdc')" disabled style="opacity:.45">Publicar en la Página</button>
-          <button class="submit-btn" id="del-wsdc-pdf" style="background:rgba(255,80,80,.12);box-shadow:none;color:#ff9999;border:1px solid rgba(255,80,80,.22);display:none" onclick="deletePdfRTDB('wsdc')">Quitar PDF</button>
+        <div id="pdf-wsdc-status" style="font-size:.75rem;color:rgba(255,255,255,.45);margin:.3rem 0;min-height:1rem"></div>
+        <div id="pdf-wsdc-current" style="display:none;margin:.5rem 0;padding:.65rem .9rem;background:rgba(255,107,0,.05);border:1px solid rgba(255,107,0,.15);border-radius:8px;font-size:.8rem">
+          <span style="color:var(--orange);font-weight:700;font-size:.6rem;letter-spacing:2px;text-transform:uppercase">Publicado · </span>
+          <span id="pdf-wsdc-curr-name" style="color:#fff"></span>
+        </div>
+        <div style="display:flex;gap:.7rem;flex-wrap:wrap;margin-top:.9rem">
+          <button class="submit-btn" onclick="saveDriveLink('wsdc')">Publicar en la Página</button>
+          <button class="submit-btn" id="del-wsdc-pdf" style="background:rgba(255,80,80,.1);box-shadow:none;color:#ff9999;border:1px solid rgba(255,80,80,.2);display:none" onclick="deleteDriveLink('wsdc')">Quitar Documento</button>
         </div>
       </div>
 
@@ -1374,7 +1461,7 @@ function nodeHtml(n, idx){
   const nodeClass = isFinal ? 'tl-node tl-final reveal' : (isRight ? 'tl-node tl-right reveal' : 'tl-node reveal');
   const dotClass = isFinal ? 'tl-dot tl-dot-final' : 'tl-dot';
   const cardClass = isFinal ? 'tl-card tl-card-final' : 'tl-card';
-  const delay = `transition-delay:${idx*.07}s`;
+  const delay = `transition-delay:${idx * .08}s`;
   const yearStyle = isFinal ? 'color:var(--orange)' : '';
   const roleStyle = isFinal ? 'font-size:clamp(1.1rem,2.5vw,1.5rem);color:#fff' : '';
   return `
@@ -1393,8 +1480,16 @@ function renderPublicTl(){
   const c = document.getElementById('tl-nodes');
   const sorted = [...tlCache].sort((a,b)=>(a.order||0)-(b.order||0));
   c.innerHTML = sorted.map((n,i)=>nodeHtml(n,i)).join('');
-  c.querySelectorAll('.reveal').forEach(el=>ro.observe(el));
-  // Fix timeline line height — runs after DOM paint
+  // Animate each node as it enters viewport
+  const tlObs = new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        e.target.classList.add('tl-vis');
+        tlObs.unobserve(e.target);
+      }
+    });
+  },{threshold:.15});
+  c.querySelectorAll('.tl-node').forEach(el=>tlObs.observe(el));
   requestAnimationFrame(()=>requestAnimationFrame(fixTlLine));
 }
 
@@ -1500,10 +1595,18 @@ function applySettings(d){
   setText('txt-mantra-s',d.mantraS);
   setText('pub-prop-label', d.propLabel);
   // Moción central
+  if(d.mocionBadge){ const el=document.querySelector('.mocion-badge'); if(el) el.textContent=d.mocionBadge; }
   setText('mocion-blank', d.mocionBlank);
   setText('mocion-key',   d.mocionKey);
   setText('mocion-sub',   d.mocionSub);
-  // PDFs come from Realtime Database — loaded separately by loadPdfFromRTDB()
+  if(d.tlTitle){
+    const el=document.getElementById('tl-main-title');
+    if(el) el.innerHTML = d.tlTitle;
+  }
+  if(d.tlLabel){ const el=document.querySelector('#convenor .tl-header .s-label'); if(el) el.textContent=d.tlLabel; }
+  // PDFs — Google Drive links stored in Firestore
+  if(d.pdfPropUrl || d.pdfPropName) updatePdfCard('prop', d.pdfPropUrl, d.pdfPropName, d.pdfPropDlUrl);
+  if(d.pdfWsdcUrl || d.pdfWsdcName) updatePdfCard('wsdc', d.pdfWsdcUrl, d.pdfWsdcName, d.pdfWsdcDlUrl);
 }
 
 // Populate admin form fields
@@ -1517,9 +1620,12 @@ function applySettingsToForms(d){
   setVal('txt-mantra-t-inp',   d.mantraT);
   setVal('txt-mantra-s-inp',   d.mantraS);
   setVal('txt-prop-label-inp', d.propLabel);
+  setVal('mocion-badge-inp',   d.mocionBadge);
   setVal('mocion-blank-inp',   d.mocionBlank);
   setVal('mocion-key-inp',     d.mocionKey);
   setVal('mocion-sub-inp',     d.mocionSub);
+  setVal('tl-title-inp',       d.tlTitle);
+  setVal('tl-label-inp',       d.tlLabel);
   setVal('pdf-prop-name',      d.pdfPropName);
   setVal('pdf-wsdc-name',      d.pdfWsdcName);
   // PDF admin cards are handled by loadInfoForm via RTDB directly
@@ -1543,23 +1649,23 @@ async function loadInfoForm(){
     const d = snap.exists ? snap.data() : {};
     settingsCache = d;
     applySettingsToForms(d);
-    // Also load RTDB PDF info for admin
+    // Populate Drive URL inputs + show current published state
     ['prop','wsdc'].forEach(key=>{
-      if(!rtdb) return;
-      rtdb.ref('pdfs/'+key).once('value').then(s=>{
-        if(!s.exists()) return;
-        const pd=s.val();
-        const curr=document.getElementById('pdf-'+key+'-current');
-        const cname=document.getElementById('pdf-'+key+'-curr-name');
-        const csize=document.getElementById('pdf-'+key+'-curr-size');
-        const delbtn=document.getElementById('del-'+key+'-pdf');
-        const nameInp=document.getElementById('pdf-'+key+'-name');
-        if(curr) curr.style.display='';
-        if(cname) cname.textContent=pd.name||'';
-        if(csize) csize.textContent=pd.size?Math.round(pd.size/1024)+'KB':'';
-        if(delbtn) delbtn.style.display='';
-        if(nameInp&&pd.name&&!nameInp.value) nameInp.value=pd.name;
-      }).catch(()=>{});
+      const d2 = settingsCache;
+      const url  = d2['pdf'+cap(key)+'Url'];
+      const name = d2['pdf'+cap(key)+'Name'];
+      const urlInp  = document.getElementById('pdf-'+key+'-url');
+      const nameInp = document.getElementById('pdf-'+key+'-name');
+      const curr    = document.getElementById('pdf-'+key+'-current');
+      const cname   = document.getElementById('pdf-'+key+'-curr-name');
+      const delbtn  = document.getElementById('del-'+key+'-pdf');
+      if(urlInp  && url)  urlInp.value  = url;
+      if(nameInp && name) nameInp.value = name;
+      if(url){
+        if(curr)   curr.style.display   = '';
+        if(cname)  cname.textContent    = name||url;
+        if(delbtn) delbtn.style.display = '';
+      }
     });
   } catch(e){
     console.warn('loadInfoForm error:', e);
@@ -1578,9 +1684,12 @@ async function saveTextos(){
     mantraT:     get('txt-mantra-t-inp'),
     mantraS:     get('txt-mantra-s-inp'),
     propLabel:   get('txt-prop-label-inp'),
+    mocionBadge: get('mocion-badge-inp'),
     mocionBlank: get('mocion-blank-inp'),
     mocionKey:   get('mocion-key-inp'),
     mocionSub:   get('mocion-sub-inp'),
+    tlTitle:     get('tl-title-inp'),
+    tlLabel:     get('tl-label-inp'),
   };
   // Only send fields whose input actually exists (not null = input missing from DOM)
   const data = {};
@@ -1600,239 +1709,117 @@ async function saveTextos(){
 
 async function saveInfo(){ await saveTextos(); }
 
-/* ── PDF — REALTIME DATABASE (base64, gratis) ─────── */
-// rtdb initialized after firebase.initializeApp
-let rtdb;
-try { rtdb = firebase.database(); } catch(e){ console.warn('RTDB no disponible:', e); }
+/* ── PDF — GOOGLE DRIVE LINK SYSTEM ─────────────────
+   Converts Drive share links to embed/preview URLs.
+   Saves to Firestore settings/main, no Storage needed.
+──────────────────────────────────────────────────── */
+let rtdb = null; // RTDB no longer needed
 
-// Selected file cache
-const pdfFileCache = {};
+// Convert any Google Drive link to an embeddable preview URL
+function driveToEmbed(url){
+  if(!url) return '';
+  // Already embed/preview format
+  if(url.includes('/preview') || url.includes('embedded=true')) return url;
+  // Standard share link: /file/d/ID/view  or  /file/d/ID/edit
+  const m = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+  if(m) return 'https://drive.google.com/file/d/'+m[1]+'/preview';
+  // docs.google.com/document or spreadsheet — use export
+  const m2 = url.match(/id=([a-zA-Z0-9_-]+)/);
+  if(m2) return 'https://drive.google.com/file/d/'+m2[1]+'/preview';
+  return url; // fallback: use as-is
+}
 
-function onPdfSelected(key){
-  const input = document.getElementById('pdf-'+key+'-file');
-  const file  = input ? input.files[0] : null;
-  if(!file) return;
-  const isPdf = file.type==='application/pdf'||file.name.toLowerCase().endsWith('.pdf');
-  if(!isPdf){ toast('Solo PDF'); input.value=''; return; }
-  const maxMB = 15;
-  if(file.size > maxMB*1024*1024){
-    toast('El PDF pesa más de '+maxMB+'MB. Comprime el archivo primero.');
-    input.value=''; return;
-  }
-  pdfFileCache[key] = file;
-  const lblTxt = document.getElementById('lbl-'+key+'-txt');
-  if(lblTxt) lblTxt.textContent = '\u2713 '+file.name+' ('+Math.round(file.size/1024)+'KB)';
-  const btn = document.getElementById('btn-'+key+'-upload');
-  if(btn){ btn.disabled=false; btn.style.opacity='1'; }
+function driveToDownload(url){
+  if(!url) return url;
+  const m = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+  if(m) return 'https://drive.google.com/uc?export=download&id='+m[1];
+  return url;
+}
+
+function previewDriveLink(key){
+  const urlEl = document.getElementById('pdf-'+key+'-url');
+  const raw   = urlEl ? urlEl.value.trim() : '';
+  if(!raw){ toast('Pega el link de Drive primero'); return; }
+  const embed  = driveToEmbed(raw);
+  const iframe = document.getElementById('pdf-'+key+'-iframe');
+  const wrap   = document.getElementById('pdf-'+key+'-preview');
   const status = document.getElementById('pdf-'+key+'-status');
-  if(status) status.textContent = 'Listo para publicar — presiona el botón';
+  if(iframe) iframe.src = embed;
+  if(wrap)   wrap.style.display = '';
+  if(status) status.textContent = '✓ Previsualizando — si aparece en blanco verifica que el archivo sea público en Drive';
 }
 
-function uploadPdfRTDB(key){
-  if(!rtdb){ toast('Realtime Database no disponible. Revisa Firebase Console.'); return; }
-  const file = pdfFileCache[key];
-  if(!file){ toast('Selecciona un archivo PDF primero'); return; }
+async function saveDriveLink(key){
+  const urlEl  = document.getElementById('pdf-'+key+'-url');
   const nameEl = document.getElementById('pdf-'+key+'-name');
-  const docName = (nameEl && nameEl.value.trim()) || file.name;
-  const status  = document.getElementById('pdf-'+key+'-status');
-  const prog    = document.getElementById('prog-'+key);
-  const progBar = document.getElementById('prog-'+key+'-bar');
-  const btn     = document.getElementById('btn-'+key+'-upload');
-
-  if(prog) prog.style.display='';
-  if(progBar) progBar.style.width='5%';
-  if(status) status.textContent = 'Leyendo archivo...';
-  if(btn){ btn.disabled=true; btn.style.opacity='.5'; }
-
-  const reader = new FileReader();
-  reader.onerror = ()=>{ if(status) status.textContent='Error leyendo archivo'; if(prog) prog.style.display='none'; if(btn){btn.disabled=false;btn.style.opacity='1';} };
-  reader.onprogress = e=>{ if(e.lengthComputable && progBar) progBar.style.width=(10+Math.round(e.loaded/e.total*40))+'%'; };
-  reader.onload = async (e)=>{
-    try{
-      if(status) status.textContent='Subiendo a Realtime Database...';
-      if(progBar) progBar.style.width='55%';
-      const base64 = e.target.result; // full data URL: "data:application/pdf;base64,..."
-      // Save to Realtime Database
-      await rtdb.ref('pdfs/'+key).set({
-        data: base64,
-        name: docName,
-        size: file.size,
-        updated: Date.now()
-      });
-      if(progBar) progBar.style.width='85%';
-      // Save metadata to Firestore settings
-      const meta = {};
-      meta['pdf'+cap(key)+'Name'] = docName;
-      meta['pdf'+cap(key)+'Size'] = file.size;
-      meta['pdf'+cap(key)+'HasRTDB'] = true;
-      await db.collection('settings').doc('main').set(meta,{merge:true});
-      if(progBar) progBar.style.width='100%';
-      setTimeout(()=>{ if(prog) prog.style.display='none'; if(progBar) progBar.style.width='0%'; },600);
-      if(status) status.textContent='\u2713 PDF publicado — visible en todos los dispositivos';
-      // Update admin card
-      const curr  = document.getElementById('pdf-'+key+'-current');
-      const cname = document.getElementById('pdf-'+key+'-curr-name');
-      const csize = document.getElementById('pdf-'+key+'-curr-size');
-      const delbtn= document.getElementById('del-'+key+'-pdf');
-      if(curr)  curr.style.display='';
-      if(cname) cname.textContent=docName;
-      if(csize) csize.textContent=Math.round(file.size/1024)+'KB';
-      if(delbtn)delbtn.style.display='';
-      // Update public card without reload
-      loadPdfFromRTDB(key);
-      delete pdfFileCache[key];
-      const input=document.getElementById('pdf-'+key+'-file'); if(input) input.value='';
-      const lblTxt=document.getElementById('lbl-'+key+'-txt'); if(lblTxt) lblTxt.textContent='Elige un PDF desde tu dispositivo';
-      if(btn){btn.disabled=true;btn.style.opacity='.45';}
-      toast('\u2713 '+docName+' publicado para todos');
-    } catch(err){
-      if(prog) prog.style.display='none';
-      if(status) status.textContent='\u2715 Error: '+err.message;
-      if(btn){btn.disabled=false;btn.style.opacity='1';}
-      const codes={'PERMISSION_DENIED':'Sin permisos. Verifica las Realtime Database Rules.'};
-      toast(codes[err.code]||('Error: '+err.message));
-    }
-  };
-  reader.readAsDataURL(file);
-}
-
-async function deletePdfRTDB(key){
-  if(!confirm('\u00bfEliminar este PDF? Desaparecerá para todos.')) return;
+  const status = document.getElementById('pdf-'+key+'-status');
+  const raw    = urlEl  ? urlEl.value.trim()  : '';
+  const name   = nameEl ? nameEl.value.trim() : '';
+  if(!raw){  toast('Pega el link de Google Drive'); return; }
+  if(!name){ toast('Escribe un título visible'); return; }
+  if(!raw.startsWith('http')){ toast('El link debe empezar con https://'); return; }
+  const embed = driveToEmbed(raw);
+  const dl    = driveToDownload(raw);
+  const data  = {};
+  data['pdf'+cap(key)+'Url']    = embed;
+  data['pdf'+cap(key)+'DlUrl']  = dl;
+  data['pdf'+cap(key)+'Name']   = name;
+  data['pdf'+cap(key)+'HasRTDB']= false;
   try{
-    if(rtdb) await rtdb.ref('pdfs/'+key).remove();
-    const meta={};
-    meta['pdf'+cap(key)+'Name']    = firebase.firestore.FieldValue.delete();
-    meta['pdf'+cap(key)+'Size']    = firebase.firestore.FieldValue.delete();
-    meta['pdf'+cap(key)+'HasRTDB'] = firebase.firestore.FieldValue.delete();
-    await db.collection('settings').doc('main').update(meta);
+    await db.collection('settings').doc('main').set(data, {merge:true});
+    if(status) status.textContent = '✓ Publicado — visible para todos';
     const curr  = document.getElementById('pdf-'+key+'-current');
+    const cname = document.getElementById('pdf-'+key+'-curr-name');
     const delbtn= document.getElementById('del-'+key+'-pdf');
-    const status= document.getElementById('pdf-'+key+'-status');
-    if(curr)   curr.style.display='none';
-    if(delbtn) delbtn.style.display='none';
-    if(status) status.textContent='';
-    updatePdfCard(key, null, null);
-    toast('PDF eliminado');
+    if(curr)   curr.style.display  = '';
+    if(cname)  cname.textContent   = name;
+    if(delbtn) delbtn.style.display= '';
+    // Update public card
+    updatePdfCard(key, embed, name, dl);
+    toast('✓ '+name+' publicado para todos');
   } catch(e){ toast('Error: '+e.message); }
 }
 
-// PUBLIC: load PDF base64 from RTDB and render
-function loadPdfFromRTDB(key){
-  if(!rtdb) return;
-  rtdb.ref('pdfs/'+key).once('value').then(snap=>{
-    if(!snap.exists()){ updatePdfCard(key, null, null); return; }
-    const d    = snap.val();
-    const name = d.name || (key==='prop'?'Propuestas V CND':'Manual WSDC');
-    const size = d.size ? ' · '+Math.round(d.size/1024)+'KB' : '';
-    // Store base64 in memory for modal
-    window['_pdfB64_'+key] = d.data;
-    updatePdfCardRTDB(key, name, size);
-  }).catch(()=>{ updatePdfCard(key, null, null); });
+async function deleteDriveLink(key){
+  if(!confirm('¿Quitar este documento de la página?')) return;
+  try{
+    const data = {};
+    data['pdf'+cap(key)+'Url']    = firebase.firestore.FieldValue.delete();
+    data['pdf'+cap(key)+'DlUrl']  = firebase.firestore.FieldValue.delete();
+    data['pdf'+cap(key)+'Name']   = firebase.firestore.FieldValue.delete();
+    data['pdf'+cap(key)+'HasRTDB']= firebase.firestore.FieldValue.delete();
+    await db.collection('settings').doc('main').update(data);
+    const curr  = document.getElementById('pdf-'+key+'-current');
+    const delbtn= document.getElementById('del-'+key+'-pdf');
+    const preview=document.getElementById('pdf-'+key+'-preview');
+    const status= document.getElementById('pdf-'+key+'-status');
+    if(curr)    curr.style.display    = 'none';
+    if(delbtn)  delbtn.style.display  = 'none';
+    if(preview) preview.style.display = 'none';
+    if(status)  status.textContent    = '';
+    updatePdfCard(key, null, null, null);
+    toast('Documento quitado');
+  } catch(e){ toast('Error: '+e.message); }
 }
 
-function updatePdfCardRTDB(key, name, sizeStr){
-  const titleEl   = document.getElementById('pdf-'+key+'-title');
-  const metaEl    = document.getElementById('pdf-'+key+'-meta');
-  const actionsEl = document.getElementById('pdf-'+key+'-actions');
-  if(!titleEl) return;
-  titleEl.textContent = name;
-  metaEl.textContent  = 'Disponible'+sizeStr+' \u00b7 Haz clic para ver';
-  actionsEl.innerHTML =
-    '<button class="doc-btn view" onclick="openPdfRTDB(\''+key+'\',' +
-    '\''+name.replace(/'/g,"\\'")+'\')">' +
-    'Ver PDF</button>' +
-    '<button class="doc-btn dl" onclick="downloadPdfRTDB(\''+key+'\')">Descargar</button>';
-}
-
-// PDF.js state
-let _pdfDoc=null, _pdfPage=1, _pdfModalKey=null;
-if(typeof pdfjsLib!=='undefined'){
-  pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-}
-
-function openPdfRTDB(key, title){
+// Backward compat stubs
+async function deletePdf(key){ await deleteDriveLink(key); }
+async function deletePdfRTDB(key){ await deleteDriveLink(key); }
+async function savePdfUrl(key){}
+function onPdfSelected(key){}
+function uploadPdfRTDB(key){ toast('Usa el link de Google Drive'); }
+function downloadPdfRTDB(key){
   const b64 = window['_pdfB64_'+key];
-  if(!b64){ toast('PDF no cargado aún, intenta de nuevo'); return; }
-  _pdfModalKey=key; _pdfDoc=null; _pdfPage=1;
-  document.getElementById('pdf-modal-title').textContent=title;
-  document.getElementById('pdf-modal').style.display='';
-  document.body.style.overflow='hidden';
-  document.getElementById('pdf-loading').style.display='flex';
-  document.getElementById('pdf-canvas').style.display='none';
-
+  if(!b64) return;
   const raw=atob(b64.split(',')[1]);
   const buf=new Uint8Array(raw.length);
   for(let i=0;i<raw.length;i++) buf[i]=raw.charCodeAt(i);
-
-  if(typeof pdfjsLib==='undefined'){
-    const blob=new Blob([buf],{type:'application/pdf'});
-    window.open(URL.createObjectURL(blob),'_blank');
-    closePdfModal();
-    toast('PDF abierto en nueva pestaña');
-    return;
-  }
-  pdfjsLib.getDocument({data:buf}).promise.then(doc=>{
-    _pdfDoc=doc;
-    document.getElementById('pdf-pg-tot').textContent=doc.numPages;
-    renderPdfPage(1);
-  }).catch(err=>{
-    document.getElementById('pdf-loading').innerHTML='<span style="color:#ff9999">Error: '+err.message+'</span>';
-  });
-}
-
-function renderPdfPage(num){
-  if(!_pdfDoc) return;
-  _pdfDoc.getPage(num).then(page=>{
-    const wrap=document.getElementById('pdf-canvas-wrap');
-    const canvas=document.getElementById('pdf-canvas');
-    const ctx=canvas.getContext('2d');
-    const scale=Math.min((wrap.clientWidth-32)/page.getViewport({scale:1}).width, 2.2);
-    const vp=page.getViewport({scale});
-    canvas.width=vp.width; canvas.height=vp.height;
-    page.render({canvasContext:ctx,viewport:vp}).promise.then(()=>{
-      document.getElementById('pdf-loading').style.display='none';
-      canvas.style.display='block';
-      document.getElementById('pdf-pg-cur').textContent=num;
-      _pdfPage=num;
-    });
-  });
-}
-
-function pdfChangePage(delta){
-  if(!_pdfDoc) return;
-  const next=_pdfPage+delta;
-  if(next<1||next>_pdfDoc.numPages) return;
-  document.getElementById('pdf-canvas').style.display='none';
-  document.getElementById('pdf-loading').style.display='flex';
-  renderPdfPage(next);
-}
-
-function closePdfModal(){
-  document.getElementById('pdf-modal').style.display='none';
-  document.body.style.overflow='';
-  _pdfDoc=null; _pdfPage=1; _pdfModalKey=null;
-}
-
-function downloadPdfRTDB(key){
-  const b64  = window['_pdfB64_'+key];
-  const name = document.getElementById('pdf-'+key+'-title').textContent || key+'.pdf';
-  if(!b64){ toast('PDF no cargado aún'); return; }
-  const byteStr = atob(b64.split(',')[1]);
-  const ab      = new ArrayBuffer(byteStr.length);
-  const ia      = new Uint8Array(ab);
-  for(let i=0;i<byteStr.length;i++) ia[i]=byteStr.charCodeAt(i);
-  const blob = new Blob([ab],{type:'application/pdf'});
-  const a    = document.createElement('a');
-  a.href     = URL.createObjectURL(blob);
-  a.download = name+'.pdf';
+  const blob=new Blob([buf],{type:'application/pdf'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=(key+'.pdf');
   a.click();
 }
-
-// Keep deletePdf alias for backward compat
-async function deletePdf(key){ await deletePdfRTDB(key); }
-
-// legacy stub — no longer used but keep to avoid reference errors
-async function savePdfUrl(key){}
 
 async function deletePdf(key){
   if(!confirm('\u00bfEliminar este PDF? Desaparece de la p\u00e1gina para todos.')) return;
@@ -1855,33 +1842,47 @@ async function deletePdf(key){
 function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
 
 /* PUBLIC PDF CARD */
-function updatePdfCard(key, url, name){
+function updatePdfCard(key, url, name, dlUrl){
   const titleEl   = document.getElementById('pdf-'+key+'-title');
   const metaEl    = document.getElementById('pdf-'+key+'-meta');
   const actionsEl = document.getElementById('pdf-'+key+'-actions');
   if(!titleEl) return;
   if(url){
     if(name) titleEl.textContent = name;
-    metaEl.textContent = 'Disponible \u00b7 Haz clic para ver';
-    const safeTitle = (name||'Documento').replace(/\\/g,'').replace(/'/g,"\\'");
+    metaEl.textContent = 'Disponible · Haz clic para ver';
+    const safeTitle = (name||'Documento').replace(/'/g,"\\'");
     const safeUrl   = url.replace(/'/g,"\\'");
+    const downloadHref = dlUrl || url;
     actionsEl.innerHTML =
-      '<button class="doc-btn view" onclick="openPdfModal(\''+safeUrl+'\',\''+safeTitle+'\')">Ver PDF</button>'+
-      '<a class="doc-btn dl" href="'+url+'" target="_blank" rel="noopener noreferrer">Descargar</a>';
+      '<button class="doc-btn view" onclick="openDriveModal(\''+safeUrl+'\',\''+safeTitle+'\')">▶ Ver PDF</button>'+
+      '<a class="doc-btn dl" href="'+downloadHref+'" target="_blank" rel="noopener noreferrer">⇩ Descargar</a>';
   } else {
     titleEl.textContent = key==='prop' ? 'Propuestas V CND' : 'Manual WSDC';
-    metaEl.textContent  = 'No disponible a\u00fan';
-    actionsEl.innerHTML = '<span style="color:rgba(255,255,255,.25);font-size:.72rem">Pr\u00f3ximamente</span>';
+    metaEl.textContent  = 'No disponible aún';
+    actionsEl.innerHTML = '<span style="color:rgba(255,255,255,.25);font-size:.72rem">Próximamente</span>';
   }
 }
 
-/* openPdfModal legacy stub — RTDB version used instead */
-
-/* ── LOAD PDFs FROM RTDB ON PAGE START ─────────── */
-document.addEventListener('DOMContentLoaded',()=>{
-  loadPdfFromRTDB('prop');
-  loadPdfFromRTDB('wsdc');
-});
+/* ── DRIVE PDF MODAL ─────────────────────────────── */
+function openDriveModal(embedUrl, title){
+  document.getElementById('pdf-modal-title').textContent = title;
+  document.getElementById('pdf-modal-frame').src = embedUrl;
+  document.getElementById('pdf-modal').style.display = '';
+  document.body.style.overflow = 'hidden';
+}
+function closePdfModal(){
+  document.getElementById('pdf-modal').style.display = 'none';
+  document.getElementById('pdf-modal-frame').src = '';
+  document.body.style.overflow = '';
+}
+// legacy stubs
+function openPdfModal(url, title){ openDriveModal(url, title); }
+function openPdfRTDB(key, title){
+  const d = settingsCache;
+  const url = d && d['pdf'+cap(key)+'Url'];
+  if(url) openDriveModal(url, title||key);
+  else toast('Documento no disponible aún');
+}
 
 /* ── TOAST ─────────────────────────────────────── */
 function toast(msg){
