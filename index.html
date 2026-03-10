@@ -763,6 +763,22 @@ footer{background:#060100;border-top:1px solid rgba(255,107,0,.14);text-align:ce
           <span style="color:rgba(255,255,255,.25);font-size:.72rem">Próximamente</span>
         </div>
       </div>
+      <div class="doc-card reveal" style="transition-delay:.2s">
+        <div class="doc-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            <polyline points="9 12 11 14 15 10"/>
+          </svg>
+        </div>
+        <div class="doc-info">
+          <div class="doc-label">Reglamentos</div>
+          <div class="doc-title" id="pdf-regl-title">Reglamentos WSDC</div>
+          <div class="doc-meta" id="pdf-regl-meta">No disponible aún</div>
+        </div>
+        <div class="doc-actions" id="pdf-regl-actions">
+          <span style="color:rgba(255,255,255,.25);font-size:.72rem">Próximamente</span>
+        </div>
+      </div>
     </div>
     <!-- PDF Viewer Modal -->
     <div id="pdf-modal" style="display:none;position:fixed;inset:0;z-index:9500">
@@ -1043,6 +1059,39 @@ footer{background:#060100;border-top:1px solid rgba(255,107,0,.14);text-align:ce
         <div style="display:flex;gap:.7rem;flex-wrap:wrap;margin-top:.9rem">
           <button class="submit-btn" onclick="saveDriveLink('wsdc')">Publicar en la Página</button>
           <button class="submit-btn" id="del-wsdc-pdf" style="background:rgba(255,80,80,.1);box-shadow:none;color:#ff9999;border:1px solid rgba(255,80,80,.2);display:none" onclick="deleteDriveLink('wsdc')">Quitar Documento</button>
+        </div>
+      </div>
+
+      <!-- Documento 3 -->
+      <div class="a-card">
+        <div class="a-title">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:.4rem"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+          Reglamentos WSDC
+        </div>
+        <div class="fg">
+          <label>Título visible en la página</label>
+          <input type="text" id="pdf-regl-name" placeholder="Ej: Reglamentos WSDC 2025">
+        </div>
+        <div class="fg">
+          <label>Link de Google Drive</label>
+          <div style="display:flex;gap:.6rem;align-items:center">
+            <input type="url" id="pdf-regl-url" placeholder="https://drive.google.com/file/d/.../view" style="flex:1">
+            <button onclick="previewDriveLink('regl')" style="background:rgba(255,107,0,.15);border:1px solid rgba(255,107,0,.3);color:var(--orange);border-radius:10px;padding:.55rem 1rem;cursor:pointer;font-size:.75rem;font-weight:700;white-space:nowrap;transition:all .2s" onmouseover="this.style.background='rgba(255,107,0,.25)'" onmouseout="this.style.background='rgba(255,107,0,.15)'">
+              👁 Previsualizar
+            </button>
+          </div>
+        </div>
+        <div id="pdf-regl-preview" style="display:none;margin:.5rem 0;border-radius:10px;overflow:hidden;border:1px solid rgba(255,107,0,.2)">
+          <iframe id="pdf-regl-iframe" src="" style="width:100%;height:320px;border:none;background:#111" allowfullscreen></iframe>
+        </div>
+        <div id="pdf-regl-status" style="font-size:.75rem;color:rgba(255,255,255,.45);margin:.3rem 0;min-height:1rem"></div>
+        <div id="pdf-regl-current" style="display:none;margin:.5rem 0;padding:.65rem .9rem;background:rgba(255,107,0,.05);border:1px solid rgba(255,107,0,.15);border-radius:8px;font-size:.8rem">
+          <span style="color:var(--orange);font-weight:700;font-size:.6rem;letter-spacing:2px;text-transform:uppercase">Publicado · </span>
+          <span id="pdf-regl-curr-name" style="color:#fff"></span>
+        </div>
+        <div style="display:flex;gap:.7rem;flex-wrap:wrap;margin-top:.9rem">
+          <button class="submit-btn" onclick="saveDriveLink('regl')">Publicar en la Página</button>
+          <button class="submit-btn" id="del-regl-pdf" style="background:rgba(255,80,80,.1);box-shadow:none;color:#ff9999;border:1px solid rgba(255,80,80,.2);display:none" onclick="deleteDriveLink('regl')">Quitar Documento</button>
         </div>
       </div>
 
@@ -1607,6 +1656,7 @@ function applySettings(d){
   // PDFs — Google Drive links stored in Firestore
   if(d.pdfPropUrl || d.pdfPropName) updatePdfCard('prop', d.pdfPropUrl, d.pdfPropName, d.pdfPropDlUrl);
   if(d.pdfWsdcUrl || d.pdfWsdcName) updatePdfCard('wsdc', d.pdfWsdcUrl, d.pdfWsdcName, d.pdfWsdcDlUrl);
+  if(d.pdfReglUrl || d.pdfReglName) updatePdfCard('regl', d.pdfReglUrl, d.pdfReglName, d.pdfReglDlUrl);
 }
 
 // Populate admin form fields
@@ -1628,6 +1678,7 @@ function applySettingsToForms(d){
   setVal('tl-label-inp',       d.tlLabel);
   setVal('pdf-prop-name',      d.pdfPropName);
   setVal('pdf-wsdc-name',      d.pdfWsdcName);
+  setVal('pdf-regl-name',      d.pdfReglName);
   // PDF admin cards are handled by loadInfoForm via RTDB directly
 }
 
@@ -1650,7 +1701,7 @@ async function loadInfoForm(){
     settingsCache = d;
     applySettingsToForms(d);
     // Populate Drive URL inputs + show current published state
-    ['prop','wsdc'].forEach(key=>{
+    ['prop','wsdc','regl'].forEach(key=>{
       const d2 = settingsCache;
       const url  = d2['pdf'+cap(key)+'Url'];
       const name = d2['pdf'+cap(key)+'Name'];
@@ -1858,7 +1909,7 @@ function updatePdfCard(key, url, name, dlUrl){
       '<button class="doc-btn view" onclick="openDriveModal(\''+safeUrl+'\',\''+safeTitle+'\')">▶ Ver PDF</button>'+
       '<a class="doc-btn dl" href="'+downloadHref+'" target="_blank" rel="noopener noreferrer">⇩ Descargar</a>';
   } else {
-    titleEl.textContent = key==='prop' ? 'Propuestas V CND' : 'Manual WSDC';
+    titleEl.textContent = key==='prop' ? 'Propuestas V CND' : key==='wsdc' ? 'Manual WSDC' : 'Reglamentos WSDC';
     metaEl.textContent  = 'No disponible aún';
     actionsEl.innerHTML = '<span style="color:rgba(255,255,255,.25);font-size:.72rem">Próximamente</span>';
   }
